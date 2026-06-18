@@ -273,7 +273,7 @@
             ['row-conf', 'row-sal', 'row-ang', 'row-jun'].forEach(id => document.getElementById(id).style.display = "none");
             try {
                 let idx = 2, conf = "";
-                if (fam !== "TU") { conf = inputFull.charAt(idx++); document.getElementById('res-conf').innerText = (dataRef[fam] && dataRef[fam].conf[conf]) ? dataRef[fam].conf[conf] : "Desconocido"; document.getElementById('row-conf').style.display = "flex"; }
+                if (fam !== "TU") { conf = inputFull.charAt(idx++); document.getElementById('res-conf').innerText = (dataRef[fam] && dataRef[fam].conf && dataRef[fam].conf[conf]) ? dataRef[fam].conf[conf] : "Desconocido"; document.getElementById('row-conf').style.display = "flex"; }
                 const meVal = matEspRev[inputFull.charAt(idx++)] || "Desconocido";
                 document.getElementById('res-mat').innerText = meVal.split(' (')[0]; document.getElementById('res-esp').innerText = meVal.includes('(') ? meVal.split('(')[1].replace(')', '') : "Desconocido";
                 if (fam !== "FL") { document.getElementById('res-jun').innerText = junMapDec[inputFull.charAt(idx++)] || "Desconocido"; document.getElementById('row-jun').style.display = "flex"; }
