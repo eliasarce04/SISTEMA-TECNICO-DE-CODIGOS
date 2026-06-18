@@ -153,7 +153,7 @@
     <div id="dec-view" class="view-container">
         <div class="container">
             <h2>MÓDULO DE DESGLOSE DE ACCESORIOS</h2>
-            <div class="input-group"><input type="text" id="input-code" placeholder="EJ: FLAA-1 o CTBA-1-2" onkeypress="handleKeyPress(event)"></div>
+            <div class="input-group"><input type="text" id="input-code" placeholder="EJ: FLCA-1 o CTBA-1-2" onkeypress="handleKeyPress(event)"></div>
             <button class="btn-dec" onclick="decodificar()">INTERPRETAR CÓDIGO</button>
             <div id="error-msg" class="error"></div>
             <div id="result" class="result-box">
@@ -202,11 +202,13 @@
         async function obtenerMedidaPorId(idTexto) {
             if (!idTexto || idTexto.trim() === "" || idTexto === "0") return "0";
             try {
+                // Forzamos a limpiar el ID quitando letras o caracteres raros de la consulta
+                let idLimpio = idTexto.toString().replace(/\D/g, ''); 
                 let response = await fetch(URL_GOOGLE_STORE, { 
                     method: "POST", 
                     redirect: "follow",
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ id: idTexto.trim() }) 
+                    body: JSON.stringify({ id: idLimpio }) 
                 });
                 let resultado = await response.json();
                 return resultado.status === "success" ? resultado.medida : idTexto;
@@ -304,19 +306,22 @@
                 if (fam !== "FL") { document.getElementById('res-jun').innerText = junMapDec[head.charAt(idx++)] || "Desconocido"; document.getElementById('row-jun').style.display = "flex"; }
                 if (fam === "CE" || fam === "CF") { let angStr = head.substring(idx); document.getElementById('res-ang').innerText = angStr + "°"; document.getElementById('row-ang').style.display = "flex"; }
                 
-                // VALIDACIÓN ESTRICTA: COMPARA LO QUE REGRESA LA BD CON EL ID ENVIADO
-                let dbEnt = await obtenerMedidaPorId(parts[1]); 
-                if (dbEnt.toString().trim() === parts[1].toString().trim() || dbEnt === "0") {
+                // Extraemos limpiamente el ID numérico
+                let idEntClean = parts[1].toString().trim();
+                let dbEnt = await obtenerMedidaPorId(idEntClean); 
+                
+                // Si la BD rebota exactamente el mismo ID, significa que falló la búsqueda en el Excel
+                if (dbEnt.toString().trim() === idEntClean || dbEnt === "0") {
                     errorMsg.innerText = `Error: La medida con ID "${parts[1]}" no existe en la base de datos.`;
                     return;
                 }
                 document.getElementById('res-ent').innerText = formatDimensionInches(dbEnt);
                 
-                // MISMA VALIDACIÓN ESTRICTA PARA MEDIDA DE SALIDA EN TRANSICIONES
                 if (fam === "CT") {
                     if (parts.length >= 3) { 
-                        let dbSal = await obtenerMedidaPorId(parts[2]); 
-                        if (dbSal.toString().trim() === parts[2].toString().trim() || dbSal === "0") {
+                        let idSalClean = parts[2].toString().trim();
+                        let dbSal = await obtenerMedidaPorId(idSalClean); 
+                        if (dbSal.toString().trim() === idSalClean || dbSal === "0") {
                             errorMsg.innerText = `Error: La medida de salida con ID "${parts[2]}" no existe en la base de datos.`;
                             return;
                         }
