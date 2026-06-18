@@ -69,7 +69,7 @@
         .result-box { margin-top: 25px; display: none; }
         .result-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; }
         .result-item .label { font-weight: bold; color: #555; }
-        .error { color: #dc3545; text-align: center; font-weight: bold; margin-top: 10px; }
+        .error { color: #dc3545; text-align: center; font-weight: bold; margin-top: 15px; font-size: 16px; }
     </style>
 </head>
 <body>
@@ -277,7 +277,6 @@
 
         function formatDimensionInches(text) {
             if (!text || text === "0") return "0 mm";
-            if (isNaN(text.split('X')[0].trim())) return text; // Si la BD devuelve texto (ej: "PRELIMPIADORA..."), lo muestra directo sin "mm"
             return text.split('X').map(valStr => {
                 const num = parseFloat(valStr.trim()); if (isNaN(num)) return valStr.trim(); if (Math.abs(num - 197) <= 1) return `${num} mm (7-3/4 in)`;
                 const roundedInches = Math.round(num / 25.4); return (Math.abs(num - (roundedInches * 25.4)) <= 2.5 && roundedInches > 0) ? `${num} mm (${roundedInches} in)` : `${num} mm`;
@@ -291,8 +290,12 @@
             errorMsg.innerText = ""; resBox.style.display = "none"; if (inputFull.length < 3) { errorMsg.innerText = "Código inválido."; return; }
             const parts = inputFull.split('-'); const head = parts[0]; if (head.length < 3 && head.substring(0,2) !== "TU") { errorMsg.innerText = "Formato de código inválido."; return; }
             const fam = head.substring(0, 2); if (!famMap[fam]) { errorMsg.innerText = "Familia no reconocida."; return; }
+            
+            if (parts.length < 2) { errorMsg.innerText = "Faltan las medidas en el código."; return; }
+            
             document.getElementById('res-fam').innerText = famMap[fam];
             ['row-conf', 'row-sal', 'row-ang', 'row-jun'].forEach(id => document.getElementById(id).style.display = "none");
+            
             try {
                 let idx = 2, conf = "";
                 if (fam !== "TU") { conf = head.charAt(idx++); document.getElementById('res-conf').innerText = (dataRef[fam] && dataRef[fam].conf && dataRef[fam].conf[conf]) ? dataRef[fam].conf[conf] : "Desconocido"; document.getElementById('row-conf').style.display = "flex"; }
@@ -300,13 +303,31 @@
                 document.getElementById('res-mat').innerText = meVal.split(' (')[0]; document.getElementById('res-esp').innerText = meVal.includes('(') ? meVal.split('(')[1].replace(')', '') : "Desconocido";
                 if (fam !== "FL") { document.getElementById('res-jun').innerText = junMapDec[head.charAt(idx++)] || "Desconocido"; document.getElementById('row-jun').style.display = "flex"; }
                 if (fam === "CE" || fam === "CF") { let angStr = head.substring(idx); document.getElementById('res-ang').innerText = angStr + "°"; document.getElementById('row-ang').style.display = "flex"; }
-                if (parts.length < 2) { errorMsg.innerText = "Faltan las medidas en el código."; return; }
-                if (fam === "CT") {
-                    let dbEnt = await obtenerMedidaPorId(parts[1]); document.getElementById('res-ent').innerText = formatDimensionInches(dbEnt);
-                    if (parts.length >= 3) { let dbSal = await obtenerMedidaPorId(parts[2]); document.getElementById('res-sal').innerText = formatDimensionInches(dbSal); document.getElementById('row-sal').style.display = "flex"; }
-                } else {
-                    let dbEnt = await obtenerMedidaPorId(parts[1]); document.getElementById('res-ent').innerText = formatDimensionInches(dbEnt);
+                
+                // VALIDACIÓN ESTRICTA DE MEDIDA DE ENTRADA
+                let dbEnt = await obtenerMedidaPorId(parts[1]); 
+                if (dbEnt.trim() === parts[1].trim() || dbEnt === "0") {
+                    errorMsg.innerText = `Error: La medida con ID "${parts[1]}" no existe en la base de datos.`;
+                    return;
                 }
+                document.getElementById('res-ent').innerText = formatDimensionInches(dbEnt);
+                
+                // VALIDACIÓN ESTRICTA DE MEDIDA DE SALIDA (SI ES TRANSICIÓN)
+                if (fam === "CT") {
+                    if (parts.length >= 3) { 
+                        let dbSal = await obtenerMedidaPorId(parts[2]); 
+                        if (dbSal.trim() === parts[2].trim() || dbSal === "0") {
+                            errorMsg.innerText = `Error: La medida de salida con ID "${parts[2]}" no existe en la base de datos.`;
+                            return;
+                        }
+                        document.getElementById('res-sal').innerText = formatDimensionInches(dbSal); 
+                        document.getElementById('row-sal').style.display = "flex"; 
+                    } else {
+                        errorMsg.innerText = "Falta la medida de salida en el código de transición.";
+                        return;
+                    }
+                }
+                
                 resBox.style.display = "block";
             } catch (e) { errorMsg.innerText = "Error al procesar el código."; }
         }
