@@ -170,7 +170,9 @@
     </div>
 
     <script>
+        // URL DE TU GOOGLE APPS SCRIPT ASIGNADA CORRECTAMENTE
         const URL_GOOGLE_STORE = "https://script.google.com/macros/s/AKfycbxIwl9OzqBML9pROQXjGqPZF1a562emYdDSx5p1wp9b2bZh3kqJJ42rWnXnL4Lw7v3o/exec";
+        
         let units = { ent: 'mm', sal: 'mm' };
         const famMap = { "FL": "FLANCHES", "TU": "TUBOS", "CE": "CODOS", "CF": "FRENOS", "CT": "TRANSICIONES" };
         const dataRef = {
@@ -195,24 +197,22 @@
                     body: JSON.stringify({ medida: medidaTexto.trim() }) 
                 });
                 let resultado = await response.json();
-                return resultado.status === "success" ? resultado.id : medidaTexto;
-            } catch (error) { console.error("Error BD:", error); return medidaTexto; }
+                return resultado.status === "success" ? resultado.id : "ERROR";
+            } catch (error) { console.error("Error BD:", error); return "ERROR"; }
         }
 
         async function obtenerMedidaPorId(idTexto) {
-            if (!idTexto || idTexto.trim() === "" || idTexto === "0") return "0";
+            if (!idTexto || idTexto.trim() === "" || idTexto === "0") return "ERROR";
             try {
-                // Forzamos a limpiar el ID quitando letras o caracteres raros de la consulta
-                let idLimpio = idTexto.toString().replace(/\D/g, ''); 
                 let response = await fetch(URL_GOOGLE_STORE, { 
                     method: "POST", 
                     redirect: "follow",
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ id: idLimpio }) 
+                    body: JSON.stringify({ id: idTexto.trim() }) 
                 });
                 let resultado = await response.json();
-                return resultado.status === "success" ? resultado.medida : idTexto;
-            } catch (error) { console.error("Error BD consultando ID:", error); return idTexto; }
+                return resultado.status === "success" ? resultado.medida : "ERROR";
+            } catch (error) { console.error("Error BD consultando ID:", error); return "ERROR"; }
         }
 
         function showView(viewId) {
@@ -272,13 +272,21 @@
                 const v1 = processVal(document.getElementById(`${p}1`).value, p), v2 = processVal(document.getElementById(`${p}2`).value, p);
                 return (!document.getElementById(`${p}2`).classList.contains('hidden') && v2 > 0) ? `${v1} X ${v2}` : `${v1}`;
             };
-            const ent = await obtenerIdMedida(getDim('ent')), sal = await obtenerIdMedida(getDim('sal'));
+            
+            const ent = await obtenerIdMedida(getDim('ent'));
+            const sal = await obtenerIdMedida(getDim('sal'));
+            
+            if (ent === "ERROR" || (dataRef[fam].sal && sal === "ERROR")) {
+                document.getElementById('final-code-display').innerHTML = "<span style='color:#dc3545;'>Error: Medida no registrada en Excel.</span>";
+                return;
+            }
+            
             let head = fam; if (fam !== "TU") head += conf; head += me; if (fam !== "FL") head += jun; if (fam === "CE" || fam === "CF") head += ang;
             document.getElementById('final-code-display').innerText = fam === "CT" ? `${head}-${ent}-${sal}` : `${head}-${ent}`;
         }
 
         function formatDimensionInches(text) {
-            if (!text || text === "0") return "0 mm";
+            if (!text || text === "0" || text === "ERROR") return "";
             return text.split('X').map(valStr => {
                 const num = parseFloat(valStr.trim()); if (isNaN(num)) return valStr.trim(); if (Math.abs(num - 197) <= 1) return `${num} mm (7-3/4 in)`;
                 const roundedInches = Math.round(num / 25.4); return (Math.abs(num - (roundedInches * 25.4)) <= 2.5 && roundedInches > 0) ? `${num} mm (${roundedInches} in)` : `${num} mm`;
@@ -306,22 +314,19 @@
                 if (fam !== "FL") { document.getElementById('res-jun').innerText = junMapDec[head.charAt(idx++)] || "Desconocido"; document.getElementById('row-jun').style.display = "flex"; }
                 if (fam === "CE" || fam === "CF") { let angStr = head.substring(idx); document.getElementById('res-ang').innerText = angStr + "°"; document.getElementById('row-ang').style.display = "flex"; }
                 
-                // Extraemos limpiamente el ID numérico
-                let idEntClean = parts[1].toString().trim();
-                let dbEnt = await obtenerMedidaPorId(idEntClean); 
-                
-                // Si la BD rebota exactamente el mismo ID, significa que falló la búsqueda en el Excel
-                if (dbEnt.toString().trim() === idEntClean || dbEnt === "0") {
+                // VALIDACIÓN DE ENTRADA DESDE LA BD NUEVA
+                let dbEnt = await obtenerMedidaPorId(parts[1]); 
+                if (dbEnt === "ERROR") {
                     errorMsg.innerText = `Error: La medida con ID "${parts[1]}" no existe en la base de datos.`;
                     return;
                 }
                 document.getElementById('res-ent').innerText = formatDimensionInches(dbEnt);
                 
+                // VALIDACIÓN DE SALIDA DESDE LA BD NUEVA
                 if (fam === "CT") {
                     if (parts.length >= 3) { 
-                        let idSalClean = parts[2].toString().trim();
-                        let dbSal = await obtenerMedidaPorId(idSalClean); 
-                        if (dbSal.toString().trim() === idSalClean || dbSal === "0") {
+                        let dbSal = await obtenerMedidaPorId(parts[2]); 
+                        if (dbSal === "ERROR") {
                             errorMsg.innerText = `Error: La medida de salida con ID "${parts[2]}" no existe en la base de datos.`;
                             return;
                         }
