@@ -5,247 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SISTEMA TÉCNICO DE CÓDIGOS</title>
     <style>
-        /* ESTILOS DEL NAVEGADOR Y DASHBOARD */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f7f9;
-        }
-
-        header {
-            background-color: #333;
-            color: white;
-            padding: 0 20px;
-            display: flex;
-            align-items: center;
-            height: 50px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        .nav-tabs {
-            display: flex;
-            height: 100%;
-        }
-
-        .nav-tab {
-            padding: 0 25px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 14px;
-            font-weight: 600;
-            color: #ccc;
-            text-decoration: none;
-            border-bottom: 3px solid transparent;
-        }
-
-        .nav-tab:hover {
-            background-color: #444;
-            color: white;
-        }
-
-        .nav-tab.active {
-            background-color: #444;
-            color: white;
-            border-bottom: 3px solid #007bff;
-        }
-
-        /* CONTENEDOR DE VISTAS */
-        .view-container {
-            display: none;
-            padding: 20px;
-            animation: fadeIn 0.4s ease;
-        }
-
-        .view-container.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ESTILOS HOME (MENU DE TARJETAS TÉCNICAS) */
-        .home-menu {
-            text-align: center;
-            max-width: 1100px;
-            margin: 60px auto;
-        }
-
-        .home-menu h1 {
-            font-size: 32px;
-            color: #111;
-            margin-bottom: 10px;
-            letter-spacing: 0.5px;
-        }
-
-        .home-menu p {
-            color: #666;
-            margin-bottom: 40px;
-        }
-
-        .cards-flex {
-            display: flex;
-            gap: 40px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px 20px;
-            width: 380px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-            cursor: pointer;
-            transition: 0.3s;
-            border: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
-            border-color: #007bff;
-        }
-
-        /* ILUSTRACIONES TÉCNICAS EN CSS */
-        .tech-illustration {
-            width: 100%;
-            height: 160px;
-            background-color: #f8fafc;
-            background-image: 
-                linear-gradient(rgba(226, 232, 240, 0.6) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(226, 232, 240, 0.6) 1px, transparent 1px);
-            background-size: 10px 10px;
-            border: 1px dashed #cbd5e1;
-            border-radius: 8px;
-            position: relative;
-            margin-bottom: 25px;
-            overflow: hidden;
-        }
-
-        .tech-illustration::before {
-            content: '';
-            position: absolute;
-            top: 5px; left: 5px; right: 5px; bottom: 5px;
-            border: 1px solid #94a3b8;
-            pointer-events: none;
-        }
-
-        .corner-dot {
-            position: absolute;
-            width: 6px;
-            height: 6px;
-            background: #e2e8f0;
-            border: 1px solid #475569;
-            border-radius: 50%;
-        }
-        .cd-tl { top: 2px; left: 2px; }
-        .cd-tr { top: 2px; right: 2px; }
-        .cd-bl { bottom: 2px; left: 2px; }
-        .cd-br { bottom: 2px; right: 2px; }
-
-        .sim-window {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 70%;
-            height: 70%;
-            background: #ffffff;
-            border: 1px solid #3b82f6;
-            border-radius: 4px;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-            display: flex;
-            flex-direction: column;
-            padding: 4px;
-        }
-        .sim-header {
-            height: 12px;
-            background: #eff6ff;
-            border-bottom: 1px solid #bfdbfe;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 2px;
-            padding-right: 4px;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7f9; }
+        header { background-color: #333; color: white; padding: 0 20px; display: flex; align-items: center; height: 50px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .nav-tabs { display: flex; height: 100%; }
+        .nav-tab { padding: 0 25px; display: flex; align-items: center; cursor: pointer; transition: 0.3s; font-size: 14px; font-weight: 600; color: #ccc; text-decoration: none; border-bottom: 3px solid transparent; }
+        .nav-tab:hover, .nav-tab.active { background-color: #444; color: white; }
+        .nav-tab.active { border-bottom: 3px solid #007bff; }
+        .view-container { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
+        .view-container.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .home-menu { text-align: center; max-width: 1100px; margin: 60px auto; }
+        .home-menu h1 { font-size: 32px; color: #111; margin-bottom: 10px; }
+        .home-menu p { color: #666; margin-bottom: 40px; }
+        .cards-flex { display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; }
+        .card { background: white; border-radius: 12px; padding: 30px 20px; width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); cursor: pointer; transition: 0.3s; border: 1px solid #e2e8f0; display: flex; flex-direction: column; align-items: center; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.12); border-color: #007bff; }
+        .tech-illustration { width: 100%; height: 160px; background-color: #f8fafc; background-image: linear-gradient(rgba(226, 232, 240, 0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(226, 232, 240, 0.6) 1px, transparent 1px); background-size: 10px 10px; border: 1px dashed #cbd5e1; border-radius: 8px; position: relative; margin-bottom: 25px; overflow: hidden; }
+        .tech-illustration::before { content: ''; position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px; border: 1px solid #94a3b8; pointer-events: none; }
+        .corner-dot { position: absolute; width: 6px; height: 6px; background: #e2e8f0; border: 1px solid #475569; border-radius: 50%; }
+        .cd-tl { top: 2px; left: 2px; } .cd-tr { top: 2px; right: 2px; } .cd-bl { bottom: 2px; left: 2px; } .cd-br { bottom: 2px; right: 2px; }
+        .sim-window { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70%; height: 70%; background: #ffffff; border: 1px solid #3b82f6; border-radius: 4px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15); display: flex; flex-direction: column; padding: 4px; }
+        .sim-header { height: 12px; background: #eff6ff; border-bottom: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: flex-end; gap: 2px; padding-right: 4px; }
         .sim-dot { width: 4px; height: 4px; background: #94a3b8; border-radius: 50%; }
-        .sim-body {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            padding: 8px 6px;
-        }
+        .sim-body { flex: 1; display: flex; flex-direction: column; gap: 5px; padding: 8px 6px; }
         .sim-line { height: 6px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 2px; }
-        .sim-display {
-            height: 14px;
-            background: #f0fdf4;
-            border: 1px dashed #22c55e;
-            border-radius: 2px;
-            font-size: 7px;
-            color: #166534;
-            font-family: monospace;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-        .sim-btn {
-            height: 14px;
-            background: #3b82f6;
-            border-radius: 2px;
-            font-size: 7px;
-            color: white;
-            font-family: sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .scan-target {
-            position: absolute;
-            top: 25%; left: 15%;
-            width: 32px; height: 32px;
-            border: 2px solid #f97316;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .scan-target::after {
-            content: '';
-            position: absolute;
-            width: 120%; height: 2px;
-            background: #ef4444;
-            box-shadow: 0 0 4px #ef4444;
-            animation: scanLine 2s infinite ease-in-out;
-        }
-        @keyframes scanLine {
-            0%, 100% { top: 0%; }
-            50% { top: 100%; }
-        }
+        .sim-display { height: 14px; background: #f0fdf4; border: 1px dashed #22c55e; border-radius: 2px; font-size: 7px; color: #166534; font-family: monospace; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .sim-btn { height: 14px; background: #3b82f6; border-radius: 2px; font-size: 7px; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .scan-target { position: absolute; top: 25%; left: 15%; width: 32px; height: 32px; border: 2px solid #f97316; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+        .scan-target::after { content: ''; position: absolute; width: 120%; height: 2px; background: #ef4444; box-shadow: 0 0 4px #ef4444; animation: scanLine 2s infinite ease-in-out; }
+        @keyframes scanLine { 0%, 100% { top: 0%; } 50% { top: 100%; } }
         .scan-text { font-size: 6px; font-family: monospace; color: #ea580c; font-weight: bold; }
-        
-        .sim-window.output {
-            left: 60%;
-            width: 55%;
-            height: 75%;
-            border-color: #64748b;
-        }
+        .sim-window.output { left: 60%; width: 55%; height: 75%; border-color: #64748b; }
         .sim-window.output .sim-body { gap: 4px; font-family: monospace; font-size: 6px; color: #334155; text-align: left;}
-
         .card h3 { margin: 10px 0 5px 0; color: #1e293b; font-size: 18px; }
         .card span { font-size: 13px; color: #64748b; }
-
-        /* Estilos Estandarizador */
         .main-layout { display: flex; flex: 1; gap: 20px; }
         .left-section { flex: 1; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-width: 420px; height: fit-content; }
         .right-section { flex: 2; display: flex; flex-direction: column; gap: 20px; }
@@ -267,24 +60,19 @@
         .hidden { display: none !important; }
         button#gen-btn { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; }
         #final-code-display { margin-top: 15px; padding: 20px; background: #e7f3ff; border: 2px dashed #007bff; font-family: monospace; font-size: 24px; font-weight: bold; text-align: center; border-radius: 6px; color: #0056b3; }
-
-        /* Estilos Decodificador */
         #dec-view .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-width: 600px; margin: 0 auto; width: 100%; }
         #dec-view h2 { color: #333; text-align: center; margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
         .input-group { margin: 20px 0; }
         #dec-view input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-family: monospace; font-size: 18px; text-align: center; box-sizing: border-box; text-transform: uppercase; }
         #dec-view input:focus { border-color: #007bff; outline: none; }
         #dec-view .btn-dec { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; }
-        #dec-view .btn-dec:hover { background: #0056b3; }
         .result-box { margin-top: 25px; display: none; }
         .result-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; }
         .result-item .label { font-weight: bold; color: #555; }
-        .result-item .value { color: #222; }
         .error { color: #dc3545; text-align: center; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
 <body>
-
     <header>
         <div class="nav-tabs">
             <div class="nav-tab active" onclick="showView('home-view')" id="tab-home">Inicio</div>
@@ -297,43 +85,27 @@
         <div class="home-menu">
             <h1>SISTEMA TÉCNICO DE CÓDIGOS</h1>
             <p>Seleccione el aplicativo que desea utilizar</p>
-            
             <div class="cards-flex">
                 <div class="card" onclick="showView('est-view')">
                     <div class="tech-illustration">
-                        <div class="corner-dot cd-tl"></div><div class="corner-dot cd-tr"></div>
-                        <div class="corner-dot cd-bl"></div><div class="corner-dot cd-br"></div>
+                        <div class="corner-dot cd-tl"></div><div class="corner-dot cd-tr"></div><div class="corner-dot cd-bl"></div><div class="corner-dot cd-br"></div>
                         <div class="sim-window">
                             <div class="sim-header"><div class="sim-dot"></div><div class="sim-dot"></div></div>
-                            <div class="sim-body">
-                                <div class="sim-line"></div>
-                                <div class="sim-line"></div>
-                                <div class="sim-display">FLCA250X150</div>
-                                <div class="sim-btn">GENERATE</div>
-                            </div>
+                            <div class="sim-body"><div class="sim-line"></div><div class="sim-line"></div><div class="sim-display">FLCA250X150</div><div class="sim-btn">GENERATE</div></div>
                         </div>
                     </div>
-                    <h3>Módulo de Codificación</h3>
-                    <span>Generar códigos técnicos automáticos</span>
+                    <h3>Módulo de Codificación</h3><span>Generar códigos técnicos automáticos</span>
                 </div>
-
                 <div class="card" onclick="showView('dec-view')">
                     <div class="tech-illustration">
-                        <div class="corner-dot cd-tl"></div><div class="corner-dot cd-tr"></div>
-                        <div class="corner-dot cd-bl"></div><div class="corner-dot cd-br"></div>
+                        <div class="corner-dot cd-tl"></div><div class="corner-dot cd-tr"></div><div class="corner-dot cd-bl"></div><div class="corner-dot cd-br"></div>
                         <div class="scan-target"><span class="scan-text">FLCA250X150</span></div>
                         <div class="sim-window output">
                             <div class="sim-header"><div class="sim-dot"></div><div class="sim-dot"></div></div>
-                            <div class="sim-body">
-                                <div style="color:#e67e22; font-weight:bold;">&gt; SCANNING...</div>
-                                <div>&gt; FAM: FLANCHES</div>
-                                <div>&gt; CONF: RECTANGULAR</div>
-                                <div>&gt; ENT: 250 mm X 150 mm</div>
-                            </div>
+                            <div class="sim-body"><div style="color:#e67e22; font-weight:bold;">&gt; SCANNING...</div><div>&gt; FAM: FLANCHES</div><div>&gt; CONF: RECTANGULAR</div><div>&gt; ENT: 250 mm X 150 mm</div></div>
                         </div>
                     </div>
-                    <h3>Módulo de Desglose</h3>
-                    <span>Interpretar códigos existentes</span>
+                    <h3>Módulo de Desglose</h3><span>Interpretar códigos existentes</span>
                 </div>
             </div>
         </div>
@@ -343,56 +115,182 @@
         <div class="main-layout">
             <div class="left-section">
                 <h2>CONFIGURACIÓN</h2>
-                <div class="field">
-                    <label>FAMILIA:</label>
+                <div class="field"><label>FAMILIA:</label>
                     <select id="familia" onchange="actualizarInterfaz()">
-                        <option value="FL">FLANCHES (FL)</option>
-                        <option value="TU">TUBOS (TU)</option>
-                        <option value="CE">CODOS (CE)</option>
-                        <option value="CF">FRENOS (CF)</option>
-                        <option value="CT">TRANSICIONES (CT)</option>
+                        <option value="FL">FLANCHES (FL)</option><option value="TU">TUBOS (TU)</option><option value="CE">CODOS (CE)</option><option value="CF">FRENOS (CF)</option><option value="CT">TRANSICIONES (CT)</option>
                     </select>
                 </div>
-                <div class="field" id="div-conf">
-                    <label>CONF:</label>
-                    <select id="config" onchange="actualizarInterfaz()"></select>
-                </div>
-                <div class="field">
-                    <label id="lbl-ent">DIMENSIÓN DE ENTRADA:</label>
+                <div class="field" id="div-conf"><label>CONF:</label><select id="config" onchange="actualizarInterfaz()"></select></div>
+                <div class="field"><label id="lbl-ent">DIMENSIÓN DE ENTRADA:</label>
                     <div class="measure-container">
-                        <div class="unit-selector">
-                            <button class="unit-btn active" id="ent-mm" onclick="toggleUnit('ent', 'mm')">mm</button>
-                            <button class="unit-btn" id="ent-in" onclick="toggleUnit('ent', 'in')">in</button>
-                        </div>
-                        <div id="ent-group" class="dimension-group">
-                            <input type="number" id="ent1" placeholder="Medida" step="any">
-                            <span class="x-sep hidden">X</span>
-                            <input type="number" id="ent2" class="hidden" placeholder="Medida" step="any">
-                        </div>
+                        <div class="unit-selector"><button class="unit-btn active" id="ent-mm" onclick="toggleUnit('ent', 'mm')">mm</button><button class="unit-btn" id="ent-in" onclick="toggleUnit('ent', 'in')">in</button></div>
+                        <div id="ent-group" class="dimension-group"><input type="number" id="ent1" placeholder="Medida" step="any"><span class="x-sep hidden">X</span><input type="number" id="ent2" class="hidden" placeholder="Medida" step="any"></div>
                     </div>
                 </div>
-                <div class="field" id="div-salida">
-                    <label id="lbl-sal">DIMENSIÓN DE SALIDA:</label>
+                <div class="field" id="div-salida"><label id="lbl-sal">DIMENSIÓN DE SALIDA:</label>
                     <div class="measure-container">
-                        <div class="unit-selector">
-                            <button class="unit-btn active" id="sal-mm" onclick="toggleUnit('sal', 'mm')">mm</button>
-                            <button class="unit-btn" id="sal-in" onclick="toggleUnit('sal', 'in')">in</button>
-                        </div>
-                        <div id="sal-group" class="dimension-group">
-                            <input type="number" id="sal1" placeholder="Medida" step="any">
-                            <span class="x-sep hidden">X</span>
-                            <input type="number" id="sal2" class="hidden" placeholder="Medida" step="any">
-                        </div>
+                        <div class="unit-selector"><button class="unit-btn active" id="sal-mm" onclick="toggleUnit('sal', 'mm')">mm</button><button class="unit-btn" id="sal-in" onclick="toggleUnit('sal', 'in')">in</button></div>
+                        <div id="sal-group" class="dimension-group"><input type="number" id="sal1" placeholder="Medida" step="any"><span class="x-sep hidden">X</span><input type="number" id="sal2" class="hidden" placeholder="Medida" step="any"></div>
                     </div>
                 </div>
-                <div class="field" id="div-angulo">
-                    <label>ÁNGULO:</label>
-                    <select id="angulo"></select>
-                </div>
+                <div class="field" id="div-angulo"><label>ÁNGULO:</label><select id="angulo"></select></div>
                 <div class="field"><label>MATERIAL:</label><select id="material"><option value="G">GALVANIZADO</option><option value="I">INOXIDABLE</option><option value="A">ACERO NEGRO</option></select></div>
                 <div class="field"><label>ESPESOR:</label><select id="espesor"><option value="15">1.5</option><option value="20">2.0</option><option value="27">2.7</option><option value="30">3.0</option><option value="46">4.6</option></select></div>
                 <div class="field" id="div-junta"><label>TIPO DE JUNTAS:</label><select id="junta"></select></div>
                 <button id="gen-btn" onclick="generarCodigo()">GENERAR CÓDIGO</button>
             </div>
             <div class="right-section">
-                <div class="tables
+                <div class="tables-row">
+                    <div class="side-table" id="table-conf-box"><h3>REF. CONFIGURACIÓN</h3><table id="table-conf"><thead><tr><th>LETRA</th><th>REPRESENTA</th></tr></thead><tbody></tbody></table></div>
+                    <div class="side-table"><h3>MATERIAL + ESPESOR</h3><table><thead><tr><th>LETRA</th><th>MATERIAL</th><th>ESP</th></tr></thead><tbody id="table-mat"></tbody></table></div>
+                    <div class="side-table" id="table-junta-box"><h3>TIPO DE JUNTAS</h3><table><thead><tr><th>LETRA</th><th>JUNTA 1</th><th>JUNTA 2</th></tr></thead><tbody id="table-junta"></tbody></table></div>
+                </div>
+                <div class="breakdown-section" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);"><h3>CÓDIGO RESULTANTE</h3><div id="final-code-display">ESPERANDO DATOS</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dec-view" class="view-container">
+        <div class="container">
+            <h2>MÓDULO DE DESGLOSE DE ACCESORIOS</h2>
+            <div class="input-group"><input type="text" id="input-code" placeholder="EJ: FLCA250X150 o CTBA300X300-200" onkeypress="handleKeyPress(event)"></div>
+            <button class="btn-dec" onclick="decodificar()">INTERPRETAR CÓDIGO</button>
+            <div id="error-msg" class="error"></div>
+            <div id="result" class="result-box">
+                <div class="result-item"><span class="label">FAMILIA:</span><span id="res-fam" class="value"></span></div>
+                <div id="row-conf" class="result-item"><span class="label">CONFIGURACIÓN:</span><span id="res-conf" class="value"></span></div>
+                <div class="result-item"><span class="label">DIMENSIÓN ENTRADA:</span><span id="res-ent" class="value"></span></div>
+                <div id="row-sal" class="result-item"><span class="label">DIMENSIÓN SALIDA:</span><span id="res-sal" class="value"></span></div>
+                <div id="row-ang" class="result-item"><span class="label">ÁNGULO:</span><span id="res-ang" class="value"></span></div>
+                <div class="result-item"><span class="label">MATERIAL:</span><span id="res-mat" class="value"></span></div>
+                <div class="result-item"><span class="label">ESPESOR:</span><span id="res-esp" class="value"></span></div>
+                <div id="row-jun" class="result-item"><span class="label">TIPO JUNTAS:</span><span id="res-jun" class="value"></span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const URL_GOOGLE_STORE = "https://script.google.com/macros/s/AKfycbxIwl9OzqBML9pROQXjGqPZF1a562emYdDSx5p1wp9b2bZh3kqJJ42rWnXnL4Lw7v3o/exec";
+        let units = { ent: 'mm', sal: 'mm' };
+        const famMap = { "FL": "FLANCHES", "TU": "TUBOS", "CE": "CODOS", "CF": "FRENOS", "CT": "TRANSICIONES" };
+        const dataRef = {
+            FL: { conf: { "A": "REDONDOS", "B": "CUADRADOS", "C": "RECTANGULAR" }, ang: false, sal: false, jun: false },
+            TU: { conf: null, ang: false, sal: false, jun: true },
+            CE: { conf: { "A": "REDONDOS", "B": "CUADRADOS CON LINNER", "C": "CUADRADOS RADIO LARGO" }, ang: ["15","30","45","60","90"], sal: false, jun: true },
+            CF: { conf: { "A": "FIJOS", "B": "AXIALES" }, ang: ["45","60"], sal: false, jun: true },
+            CT: { conf: { "A": "REDONDO A REDONDO", "B": "RECTANGULAR A CUADRADO", "C": "CUADRADO A REDONDO", "D": "RECTANGULAR A REDONDO" }, ang: false, sal: true, jun: true }
+        };
+        const matEspMap = { "G15":"A", "G20":"B", "G27":"C", "G30":"D", "G46":"E", "I15":"F", "I20":"G", "I27":"H", "I30":"I", "I46":"J", "A15":"K", "A20":"L", "A27":"M", "A30":"N", "A46":"O" };
+        const matEspRev = { "A":"GALVANIZADO (1.5mm)", "B":"GALVANIZADO (2.0mm)", "C":"GALVANIZADO (2.7mm)", "D":"GALVANIZADO (3.0mm)", "E":"GALVANIZADO (4.6mm)", "F":"INOXIDABLE (1.5mm)", "G":"INOXIDABLE (2.0mm)", "H":"INOXIDABLE (2.7mm)", "I":"INOXIDABLE (3.0mm)", "J":"INOXIDABLE (4.6mm)", "K":"ACERO NEGRO (1.5mm)", "L":"ACERO NEGRO (2.0mm)", "M":"ACERO NEGRO (2.7mm)", "N":"ACERO NEGRO (3.0mm)", "O":"ACERO NEGRO (4.6mm)" };
+        const junMap = { "A":["FLANCHE","FLANCHE"], "B":["FLANCHE","PESTAÑA"], "C":["FLANCHE","LISO"], "D":["PESTAÑA","FLANCHE"], "E":["PESTAÑA","PESTAÑA"], "F":["PESTAÑA","LISO"], "G":["LISO","FLANCHE"], "H":["LISO","PESTAÑA"], "I":["LISO","LISO"] };
+        const junMapDec = { "A":"FLANCHE / FLANCHE", "B":"FLANCHE / PESTAÑA", "C":"FLANCHE / LISO", "D":"PESTAÑA / FLANCHE", "E":"PESTAÑA / PESTAÑA", "F":"PESTAÑA / LISO", "G":"LISO / FLANCHE", "H":"LISO / PESTAÑA", "I":"LISO / LISO" };
+
+        async function obtenerIdMedida(medidaTexto) {
+            if (!medidaTexto || medidaTexto.trim() === "" || medidaTexto === "0") return "0";
+            try {
+                let response = await fetch(URL_GOOGLE_STORE, { method: "POST", mode: "cors", body: JSON.stringify({ medida: medidaTexto.trim() }) });
+                let resultado = await response.json();
+                return resultado.status === "success" ? resultado.id : medidaTexto;
+            } catch (error) { console.error("Error BD:", error); return medidaTexto; }
+        }
+
+        function showView(viewId) {
+            document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            if(viewId === 'home-view') document.getElementById('tab-home').classList.add('active');
+            if(viewId === 'est-view') document.getElementById('tab-est').classList.add('active');
+            if(viewId === 'dec-view') document.getElementById('tab-dec').classList.add('active');
+        }
+
+        function toggleUnit(field, unit) {
+            units[field] = unit;
+            document.getElementById(`${field}-mm`).classList.toggle('active', unit === 'mm');
+            document.getElementById(`${field}-in`).classList.toggle('active', unit === 'in');
+        }
+
+        function actualizarInterfaz() {
+            const fam = document.getElementById('familia').value, info = dataRef[fam];
+            document.getElementById('table-conf-box').classList.toggle('hidden', !info.conf);
+            document.getElementById('table-junta-box').classList.toggle('hidden', !info.jun);
+            const divConf = document.getElementById('div-conf');
+            if (info.conf) {
+                divConf.classList.remove('hidden'); const sel = document.getElementById('config');
+                if (sel.getAttribute('data-fam') !== fam) {
+                    sel.innerHTML = Object.entries(info.conf).map(([k,v]) => `<option value="${k}">${v}</option>`).join(""); sel.setAttribute('data-fam', fam);
+                    document.querySelector('#table-conf tbody').innerHTML = Object.entries(info.conf).map(([k,v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("");
+                }
+            } else { divConf.classList.add('hidden'); }
+            const conf = document.getElementById('config').value; let esRectEnt = (fam === 'CT' && (conf === 'B' || conf === 'D')) || (fam === 'FL' && conf === 'C');
+            toggleDim('ent', esRectEnt); toggleDim('sal', false && info.sal);
+            document.getElementById('div-salida').classList.toggle('hidden', !info.sal);
+            const selAng = document.getElementById('angulo');
+            if (info.ang) { document.getElementById('div-angulo').classList.remove('hidden'); selAng.innerHTML = info.ang.map(a => `<option value="${a}">${a}°</option>`).join(""); }
+            else { document.getElementById('div-angulo').classList.add('hidden'); }
+            document.getElementById('div-junta').classList.toggle('hidden', !info.jun); dibujarTablasMat();
+        }
+
+        function toggleDim(prefix, showSecond) { document.getElementById(`${prefix}2`).classList.toggle('hidden', !showSecond); document.querySelector(`#${prefix}-group .x-sep`).classList.toggle('hidden', !showSecond); }
+        function processVal(val, field) { let n = parseFloat(val) || 0; return units[field] === 'in' ? Math.round(n * 25.4) : n; }
+
+        function dibujarTablasMat() {
+            document.getElementById('table-mat').innerHTML = Object.entries(matEspMap).map(([k,v]) => `<tr><td>${v}</td><td>${k[0]=='G'?'GALVANIZADO':k[0]=='I'?'INOXIDABLE':'ACERO NEGRO'}</td><td>${k.slice(1)/10}</td></tr>`).join("");
+            const tJun = document.getElementById('table-junta'), selJun = document.getElementById('junta');
+            if (tJun.innerHTML === "") {
+                tJun.innerHTML = Object.entries(junMap).map(([k,v]) => `<tr><td>${k}</td><td>${v[0]}</td><td>${v[1]}</td></tr>`).join("");
+                selJun.innerHTML = Object.entries(junMap).map(([k,v]) => `<option value="${k}">${v[0]} - ${v[1]}</option>`).join("");
+            }
+        }
+
+        async function generarCodigo() {
+            document.getElementById('final-code-display').innerText = "PROCESANDO CON BASE DE DATOS...";
+            const fam = document.getElementById('familia').value, conf = document.getElementById('config').value;
+            const me = matEspMap[document.getElementById('material').value + document.getElementById('espesor').value], jun = document.getElementById('junta').value, ang = document.getElementById('angulo').value;
+            const getDim = (p) => {
+                const v1 = processVal(document.getElementById(`${p}1`).value, p), v2 = processVal(document.getElementById(`${p}2`).value, p);
+                return (!document.getElementById(`${p}2`).classList.contains('hidden') && v2 > 0) ? `${v1}X${v2}` : `${v1}`;
+            };
+            const ent = await obtenerIdMedida(getDim('ent')), sal = await obtenerIdMedida(getDim('sal'));
+            let head = fam; if (fam !== "TU") head += conf; head += me; if (fam !== "FL") head += jun; if (fam === "CE" || fam === "CF") head += ang;
+            document.getElementById('final-code-display').innerText = fam === "CT" ? `${head}${ent}-${sal}` : `${head}${ent}`;
+        }
+
+        function formatDimensionInches(text) {
+            if (!text) return "";
+            return text.split('X').map(valStr => {
+                const num = parseFloat(valStr); if (isNaN(num)) return valStr; if (Math.abs(num - 197) <= 1) return `${num} mm (7-3/4 in)`;
+                const roundedInches = Math.round(num / 25.4); return (Math.abs(num - (roundedInches * 25.4)) <= 2.5 && roundedInches > 0) ? `${num} mm (${roundedInches} in)` : `${num} mm`;
+            }).join(' X ');
+        }
+
+        function handleKeyPress(e) { if (e.key === 'Enter') decodificar(); }
+
+        function decodificar() {
+            const inputFull = document.getElementById('input-code').value.trim().toUpperCase(), errorMsg = document.getElementById('error-msg'), resBox = document.getElementById('result');
+            errorMsg.innerText = ""; resBox.style.display = "none"; if (inputFull.length < 3) { errorMsg.innerText = "Código inválido."; return; }
+            const fam = inputFull.substring(0, 2); if (!famMap[fam]) { errorMsg.innerText = "Familia no reconocida."; return; }
+            document.getElementById('res-fam').innerText = famMap[fam];
+            ['row-conf', 'row-sal', 'row-ang', 'row-jun'].forEach(id => document.getElementById(id).style.display = "none");
+            try {
+                let idx = 2, conf = "";
+                if (fam !== "TU") { conf = inputFull.charAt(idx++); document.getElementById('res-conf').innerText = (dataRef[fam] && dataRef[fam].conf[conf]) ? dataRef[fam].conf[conf] : "Desconocido"; document.getElementById('row-conf').style.display = "flex"; }
+                const meVal = matEspRev[inputFull.charAt(idx++)] || "Desconocido";
+                document.getElementById('res-mat').innerText = meVal.split(' (')[0]; document.getElementById('res-esp').innerText = meVal.includes('(') ? meVal.split('(')[1].replace(')', '') : "Desconocido";
+                if (fam !== "FL") { document.getElementById('res-jun').innerText = junMapDec[inputFull.charAt(idx++)] || "Desconocido"; document.getElementById('row-jun').style.display = "flex"; }
+                if (fam === "CE" || fam === "CF") {
+                    let angStr = ""; while (idx < inputFull.length && !isNaN(inputFull.charAt(idx))) { angStr += inputFull.charAt(idx++); if (["15","30","45","60","90"].includes(angStr)) break; }
+                    document.getElementById('res-ang').innerText = angStr + "°"; document.getElementById('row-ang').style.display = "flex";
+                }
+                const numPart = inputFull.substring(idx); if (!numPart) { errorMsg.innerText = "Faltan las medidas numéricas."; return; }
+                if (fam === "CT") {
+                    const ctParts = numPart.split('-'); document.getElementById('res-ent').innerText = formatDimensionInches(ctParts[0]);
+                    if (ctParts.length >= 2) { document.getElementById('res-sal').innerText = formatDimensionInches(ctParts[1]); document.getElementById('row-sal').style.display = "flex"; }
+                } else { document.getElementById('res-ent').innerText = formatDimensionInches(numPart); }
+                resBox.style.display = "block";
+            } catch (e) { errorMsg.innerText = "Error al procesar el código."; }
+        }
+
+        window.onload = function() { actualizarInterfaz(); };
+    </script>
+</body>
+</html>
