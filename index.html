@@ -114,7 +114,7 @@
             border-color: #007bff;
         }
 
-        /* ILUSTRACIONES TÉCNICAS EN CSS (Estilo Planos / CAD) */
+        /* ILUSTRACIONES TÉCNICAS EN CSS */
         .tech-illustration {
             width: 100%;
             height: 160px;
@@ -130,7 +130,6 @@
             overflow: hidden;
         }
 
-        /* Decoraciones de cotas/líneas de plano externo */
         .tech-illustration::before {
             content: '';
             position: absolute;
@@ -139,7 +138,6 @@
             pointer-events: none;
         }
 
-        /* Puntos de esquina CAD */
         .corner-dot {
             position: absolute;
             width: 6px;
@@ -153,7 +151,6 @@
         .cd-bl { bottom: 2px; left: 2px; }
         .cd-br { bottom: 2px; right: 2px; }
 
-        /* Ventana UI Simulada Generador */
         .sim-window {
             position: absolute;
             top: 50%; left: 50%;
@@ -187,7 +184,6 @@
             padding: 8px 6px;
         }
         .sim-line { height: 6px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 2px; }
-        .sim-line.fill { background: #ffeaf0; border-color: #fbcfe8; }
         .sim-display {
             height: 14px;
             background: #f0fdf4;
@@ -214,7 +210,6 @@
             font-weight: bold;
         }
 
-        /* Elementos del Escáner/Desglose */
         .scan-target {
             position: absolute;
             top: 25%; left: 15%;
@@ -247,16 +242,8 @@
         }
         .sim-window.output .sim-body { gap: 4px; font-family: monospace; font-size: 6px; color: #334155; text-align: left;}
 
-        .card h3 {
-            margin: 10px 0 5px 0;
-            color: #1e293b;
-            font-size: 18px;
-        }
-
-        .card span {
-            font-size: 13px;
-            color: #64748b;
-        }
+        .card h3 { margin: 10px 0 5px 0; color: #1e293b; font-size: 18px; }
+        .card span { font-size: 13px; color: #64748b; }
 
         /* Estilos Estandarizador */
         .main-layout { display: flex; flex: 1; gap: 20px; }
@@ -321,7 +308,7 @@
                             <div class="sim-body">
                                 <div class="sim-line"></div>
                                 <div class="sim-line"></div>
-                                <div class="sim-display">1/2 INCH -> 12.700 MM</div>
+                                <div class="sim-display">FLCA250X150</div>
                                 <div class="sim-btn">GENERATE</div>
                             </div>
                         </div>
@@ -334,14 +321,14 @@
                     <div class="tech-illustration">
                         <div class="corner-dot cd-tl"></div><div class="corner-dot cd-tr"></div>
                         <div class="corner-dot cd-bl"></div><div class="corner-dot cd-br"></div>
-                        <div class="scan-target"><span class="scan-text">FCM001</span></div>
+                        <div class="scan-target"><span class="scan-text">FLCA250X150</span></div>
                         <div class="sim-window output">
                             <div class="sim-header"><div class="sim-dot"></div><div class="sim-dot"></div></div>
                             <div class="sim-body">
                                 <div style="color:#e67e22; font-weight:bold;">> SCANNING...</div>
-                                <div>> ITEM: ENSEM.</div>
-                                <div>> LEVEL: 2</div>
-                                <div>> MAT: ACERO</div>
+                                <div>> FAM: FLANCHES</div>
+                                <div>> CONF: RECTANGULAR</div>
+                                <div>> ENT: 250 mm X 150 mm</div>
                             </div>
                         </div>
                     </div>
@@ -434,7 +421,7 @@
         <div class="container">
             <h2>MÓDULO DE DESGLOSE DE ACCESORIOS</h2>
             <div class="input-group">
-                <input type="text" id="input-code" placeholder="EJ: CE-A-200-90-B-A" onkeypress="handleKeyPress(event)">
+                <input type="text" id="input-code" placeholder="EJ: FLCA250X150 o CTBA300X300-200" onkeypress="handleKeyPress(event)">
             </div>
             <button class="btn-dec" onclick="decodificar()">INTERPRETAR CÓDIGO</button>
             <div id="error-msg" class="error"></div>
@@ -500,8 +487,6 @@
             let esRectEnt = false, esRectSal = false;
             if (fam === 'CT') {
                 if (conf === 'B' || conf === 'D') esRectEnt = true;
-                if (conf === 'A' || conf === 'C' || conf === 'D') esRectSal = false;
-                if (conf === 'B') esRectSal = false;
             } else if (fam === 'FL') {
                 if (conf === 'C') esRectEnt = true;
             }
@@ -517,7 +502,6 @@
             dibujarTablasMat();
         }
 
-        // Duplicación de seguridad interna para evitar errores por desborde visual
         function toggleDim(prefix, showSecond) {
             document.getElementById(`${prefix}2`).classList.toggle('hidden', !showSecond);
             document.querySelector(`#${prefix}-group .x-sep`).classList.toggle('hidden', !showSecond);
@@ -538,23 +522,37 @@
             return n;
         }
 
+        // GENERADOR ESTRUCTURAL CONTINUO CON SEPARADOR 'X' PARA RECTANGULARES
         function generarCodigo() {
-            const fam = document.getElementById('familia').value, conf = document.getElementById('config').value;
+            const fam = document.getElementById('familia').value;
+            const conf = document.getElementById('config').value;
             const me = matEspMap[document.getElementById('material').value + document.getElementById('espesor').value];
-            const jun = document.getElementById('junta').value, ang = document.getElementById('angulo').value;
+            const jun = document.getElementById('junta').value;
+            const ang = document.getElementById('angulo').value;
+            
             const getDim = (p) => {
                 const v1 = processVal(document.getElementById(`${p}1`).value, p);
                 const v2 = processVal(document.getElementById(`${p}2`).value, p);
                 const isHidden = document.getElementById(`${p}2`).classList.contains('hidden');
-                return (!isHidden && v2 > 0) ? `${v1}X${v2}` : v1;
+                return (!isHidden && v2 > 0) ? `${v1}X${v2}` : `${v1}`;
             };
-            const ent = getDim('ent'), sal = getDim('sal');
+            
+            const ent = getDim('ent');
+            const sal = getDim('sal');
+            
+            let letrasHead = fam;
+            if (fam !== "TU") letrasHead += conf;
+            letrasHead += me;
+            if (fam !== "FL") letrasHead += jun;
+            if (fam === "CE" || fam === "CF") letrasHead += ang;
+            
             let res = "";
-            if (fam === "FL") res = `FL-${conf}-${ent}-${me}`;
-            else if (fam === "TU") res = `TU-${ent}-${me}-${jun}`;
-            else if (fam === "CE") res = `CE-${conf}-${ent}-${ang}-${me}-${jun}`;
-            else if (fam === "CF") res = `CF-${conf}-${ent}-${ang}-${me}-${jun}`;
-            else if (fam === "CT") res = `CT-${conf}-${ent}-${sal}-${me}-${jun}`;
+            if (fam === "CT") {
+                res = `${letrasHead}${ent}-${sal}`;
+            } else {
+                res = `${letrasHead}${ent}`;
+            }
+            
             document.getElementById('final-code-display').innerText = res;
         }
 
@@ -564,7 +562,7 @@
             FL: { "A": "REDONDOS", "B": "CUADRADOS", "C": "RECTANGULAR" },
             CE: { "A": "REDONDOS", "B": "CUADRADOS CON LINNER", "C": "CUADRADOS RADIO LARGO" },
             CF: { "A": "FIJOS", "B": "AXIALES" },
-            CT: { "A": "REDONDO A REDONDO", "B": "RECTANGULAR A CUADRADO", "C": "RECT/CUAD A REDONDO" }
+            CT: { "A": "REDONDO A REDONDO", "B": "RECTANGULAR A CUADRADO", "C": "CUADRADO A REDONDO", "D": "RECTANGULAR A REDONDO" }
         };
         const matEspRev = {
             "A":"GALVANIZADO (1.5mm)", "B":"GALVANIZADO (2.0mm)", "C":"GALVANIZADO (2.7mm)", "D":"GALVANIZADO (3.0mm)", "E":"GALVANIZADO (4.6mm)",
@@ -579,42 +577,34 @@
 
         function formatDimensionInches(text) {
             if (!text) return "";
-            
             const subParts = text.split('X');
             const processedSubParts = subParts.map(valStr => {
                 const num = parseFloat(valStr);
                 if (isNaN(num)) return valStr;
-                
-                // Excepción específica para 197 mm -> 7-3/4 in
-                if (Math.abs(num - 197) <= 1) {
-                    return `${num} mm (7-3/4 in)`;
-                }
-                
+                if (Math.abs(num - 197) <= 1) return `${num} mm (7-3/4 in)`;
                 const rawInches = num / 25.4;
                 const roundedInches = Math.round(rawInches);
-                
                 if (Math.abs(num - (roundedInches * 25.4)) <= 2.5 && roundedInches > 0) {
                     return `${num} mm (${roundedInches} in)`;
                 } else {
                     return `${num} mm`;
                 }
             });
-            
             return processedSubParts.join(' X ');
         }
 
         function handleKeyPress(e) { if (e.key === 'Enter') decodificar(); }
 
         function decodificar() {
-            const code = document.getElementById('input-code').value.trim().toUpperCase();
-            const parts = code.split('-');
+            const inputFull = document.getElementById('input-code').value.trim().toUpperCase();
             const errorMsg = document.getElementById('error-msg');
             const resBox = document.getElementById('result');
             errorMsg.innerText = "";
             resBox.style.display = "none";
             
-            if (parts.length < 3) { errorMsg.innerText = "Código inválido o incompleto."; return; }
-            const fam = parts[0];
+            if (inputFull.length < 3) { errorMsg.innerText = "Código inválido."; return; }
+            
+            const fam = inputFull.substring(0, 2);
             if (!famMap[fam]) { errorMsg.innerText = "Familia no reconocida."; return; }
             
             document.getElementById('res-fam').innerText = famMap[fam];
@@ -624,49 +614,64 @@
             document.getElementById('row-jun').style.display = "none";
             
             try {
-                let idx = 1;
-                // Si la familia cuenta con configuración intermedia, la extrae
+                let charIdx = 2;
+                let conf = "";
                 if (fam !== "TU") {
-                    const c = parts[idx++];
-                    document.getElementById('res-conf').innerText = (confMapDec[fam] && confMapDec[fam][c]) ? confMapDec[fam][c] : "Desconocido";
+                    conf = inputFull.charAt(charIdx++);
+                    document.getElementById('res-conf').innerText = (confMapDec[fam] && confMapDec[fam][conf]) ? confMapDec[fam][conf] : "Desconocido";
                     document.getElementById('row-conf').style.display = "flex";
                 }
                 
-                // Extraer Dimensión de Entrada
-                document.getElementById('res-ent').innerText = formatDimensionInches(parts[idx++]);
-                
-                // Extraer Dimensión de Salida (Solo para Transiciones)
-                if (fam === "CT") {
-                    document.getElementById('res-sal').innerText = formatDimensionInches(parts[idx++]);
-                    document.getElementById('row-sal').style.display = "flex";
-                }
-                
-                // Extraer Ángulo (Solo Codos y Frenos)
-                if (fam === "CE" || fam === "CF") {
-                    document.getElementById('res-ang').innerText = parts[idx++] + "°";
-                    document.getElementById('row-ang').style.display = "flex";
-                }
-                
-                // Extraer Material y Espesor
-                const meKey = parts[idx++];
+                const meKey = inputFull.charAt(charIdx++);
                 const meVal = matEspRev[meKey] || "Desconocido";
                 document.getElementById('res-mat').innerText = meVal.split(' (')[0];
                 document.getElementById('res-esp').innerText = meVal.includes('(') ? meVal.split('(')[1].replace(')', '') : "Desconocido";
                 
-                // Extraer Tipo de Junta (Excepto en Flanches)
+                let jKey = "";
                 if (fam !== "FL") {
-                    const jKey = parts[idx++];
+                    jKey = inputFull.charAt(charIdx++);
                     document.getElementById('res-jun').innerText = junMapDec[jKey] || "Desconocido";
                     document.getElementById('row-jun').style.display = "flex";
                 }
                 
+                if (fam === "CE" || fam === "CF") {
+                    let angStr = "";
+                    while (charIdx < inputFull.length && !isNaN(inputFull.charAt(charIdx))) {
+                        angStr += inputFull.charAt(charIdx++);
+                        if (angStr === "15" || angStr === "30" || angStr === "45" || angStr === "60" || angStr === "90") {
+                            break;
+                        }
+                    }
+                    document.getElementById('res-ang').innerText = angStr + "°";
+                    document.getElementById('row-ang').style.display = "flex";
+                }
+                
+                const parteNumericaFinal = inputFull.substring(charIdx);
+                if (!parteNumericaFinal) { errorMsg.innerText = "Faltan las medidas numéricas."; return; }
+                
+                if (fam === "CT") {
+                    const ctParts = parteNumericaFinal.split('-');
+                    if (ctParts.length >= 2) {
+                        document.getElementById('res-ent').innerText = formatDimensionInches(ctParts[0]);
+                        document.getElementById('res-sal').innerText = formatDimensionInches(ctParts[1]);
+                        document.getElementById('row-sal').style.display = "flex";
+                    } else {
+                        document.getElementById('res-ent').innerText = formatDimensionInches(parteNumericaFinal);
+                    }
+                } else {
+                    document.getElementById('res-ent').innerText = formatDimensionInches(parteNumericaFinal);
+                }
+                
                 resBox.style.display = "block";
             } catch (e) { 
-                errorMsg.innerText = "Error al procesar el formato del código."; 
+                errorMsg.innerText = "Error al procesar el formato continuo del código."; 
             }
         }
 
-        window.onload = actualizarInterfaz;
+        // Ejecución segura de interfaz tras cargar los elementos del DOM
+        window.onload = function() {
+            actualizarInterfaz();
+        };
     </script>
 </body>
 </html>
