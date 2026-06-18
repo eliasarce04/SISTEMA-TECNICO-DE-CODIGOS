@@ -91,7 +91,7 @@
                         <div class="corner-dot cd-tl"></div><div class="corner-dot cd-tr"></div><div class="corner-dot cd-bl"></div><div class="corner-dot cd-br"></div>
                         <div class="sim-window">
                             <div class="sim-header"><div class="sim-dot"></div><div class="sim-dot"></div></div>
-                            <div class="sim-body"><div class="sim-line"></div><div class="sim-line"></div><div class="sim-display">FLCA250X150</div><div class="sim-btn">GENERATE</div></div>
+                            <div class="sim-body"><div class="sim-line"></div><div class="sim-line"></div><div class="sim-display">FLCA-1</div><div class="sim-btn">GENERATE</div></div>
                         </div>
                     </div>
                     <h3>Módulo de Codificación</h3><span>Generar códigos técnicos automáticos</span>
@@ -99,7 +99,7 @@
                 <div class="card" onclick="showView('dec-view')">
                     <div class="tech-illustration">
                         <div class="corner-dot cd-tl"></div><div class="corner-dot cd-tr"></div><div class="corner-dot cd-bl"></div><div class="corner-dot cd-br"></div>
-                        <div class="scan-target"><span class="scan-text">FLCA250X150</span></div>
+                        <div class="scan-target"><span class="scan-text">FLCA-1</span></div>
                         <div class="sim-window output">
                             <div class="sim-header"><div class="sim-dot"></div><div class="sim-dot"></div></div>
                             <div class="sim-body"><div style="color:#e67e22; font-weight:bold;">&gt; SCANNING...</div><div>&gt; FAM: FLANCHES</div><div>&gt; CONF: RECTANGULAR</div><div>&gt; ENT: 250 mm X 150 mm</div></div>
@@ -153,7 +153,7 @@
     <div id="dec-view" class="view-container">
         <div class="container">
             <h2>MÓDULO DE DESGLOSE DE ACCESORIOS</h2>
-            <div class="input-group"><input type="text" id="input-code" placeholder="EJ: FLCA250X150 o CTBA300X300-200" onkeypress="handleKeyPress(event)"></div>
+            <div class="input-group"><input type="text" id="input-code" placeholder="EJ: FLCA-1 o CTBA-1-2" onkeypress="handleKeyPress(event)"></div>
             <button class="btn-dec" onclick="decodificar()">INTERPRETAR CÓDIGO</button>
             <div id="error-msg" class="error"></div>
             <div id="result" class="result-box">
@@ -200,109 +200,4 @@
                 let response = await fetch(URL_GOOGLE_STORE, { method: "POST", mode: "cors", body: JSON.stringify({ id: idTexto.trim() }) });
                 let resultado = await response.json();
                 return resultado.status === "success" ? resultado.medida : idTexto;
-            } catch (error) { console.error("Error BD consultando ID:", error); return idTexto; }
-        }
-
-        function showView(viewId) {
-            document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            if(viewId === 'home-view') document.getElementById('tab-home').classList.add('active');
-            if(viewId === 'est-view') document.getElementById('tab-est').classList.add('active');
-            if(viewId === 'dec-view') document.getElementById('tab-dec').classList.add('active');
-        }
-
-        function toggleUnit(field, unit) {
-            units[field] = unit;
-            document.getElementById(`${field}-mm`).classList.toggle('active', unit === 'mm');
-            document.getElementById(`${field}-in`).classList.toggle('active', unit === 'in');
-        }
-
-        function actualizarInterfaz() {
-            const fam = document.getElementById('familia').value, info = dataRef[fam];
-            document.getElementById('table-conf-box').classList.toggle('hidden', !info.conf);
-            document.getElementById('table-junta-box').classList.toggle('hidden', !info.jun);
-            const divConf = document.getElementById('div-conf');
-            if (info.conf) {
-                divConf.classList.remove('hidden'); const sel = document.getElementById('config');
-                if (sel.getAttribute('data-fam') !== fam) {
-                    sel.innerHTML = Object.entries(info.conf).map(([k,v]) => `<option value="${k}">${v}</option>`).join(""); sel.setAttribute('data-fam', fam);
-                    document.querySelector('#table-conf tbody').innerHTML = Object.entries(info.conf).map(([k,v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("");
-                }
-            } else { divConf.classList.add('hidden'); }
-            const conf = document.getElementById('config').value; let esRectEnt = (fam === 'CT' && (conf === 'B' || conf === 'D')) || (fam === 'FL' && conf === 'C');
-            toggleDim('ent', esRectEnt); toggleDim('sal', false && info.sal);
-            document.getElementById('div-salida').classList.toggle('hidden', !info.sal);
-            const selAng = document.getElementById('angulo');
-            if (info.ang) { document.getElementById('div-angulo').classList.remove('hidden'); selAng.innerHTML = info.ang.map(a => `<option value="${a}">${a}°</option>`).join(""); }
-            else { document.getElementById('div-angulo').classList.add('hidden'); }
-            document.getElementById('div-junta').classList.toggle('hidden', !info.jun); dibujarTablasMat();
-        }
-
-        function toggleDim(prefix, showSecond) { document.getElementById(`${prefix}2`).classList.toggle('hidden', !showSecond); document.querySelector(`#${prefix}-group .x-sep`).classList.toggle('hidden', !showSecond); }
-        function processVal(val, field) { let n = parseFloat(val) || 0; return units[field] === 'in' ? Math.round(n * 25.4) : n; }
-
-        function dibujarTablasMat() {
-            document.getElementById('table-mat').innerHTML = Object.entries(matEspMap).map(([k,v]) => `<tr><td>${v}</td><td>${k[0]=='G'?'GALVANIZADO':k[0]=='I'?'INOXIDABLE':'ACERO NEGRO'}</td><td>${k.slice(1)/10}</td></tr>`).join("");
-            const tJun = document.getElementById('table-junta'), selJun = document.getElementById('junta');
-            if (tJun.innerHTML === "") {
-                tJun.innerHTML = Object.entries(junMap).map(([k,v]) => `<tr><td>${k}</td><td>${v[0]}</td><td>${v[1]}</td></tr>`).join("");
-                selJun.innerHTML = Object.entries(junMap).map(([k,v]) => `<option value="${k}">${v[0]} - ${v[1]}</option>`).join("");
-            }
-        }
-
-        async function generarCodigo() {
-            document.getElementById('final-code-display').innerText = "PROCESANDO CON BASE DE DATOS...";
-            const fam = document.getElementById('familia').value, conf = document.getElementById('config').value;
-            const me = matEspMap[document.getElementById('material').value + document.getElementById('espesor').value], jun = document.getElementById('junta').value, ang = document.getElementById('angulo').value;
-            const getDim = (p) => {
-                const v1 = processVal(document.getElementById(`${p}1`).value, p), v2 = processVal(document.getElementById(`${p}2`).value, p);
-                return (!document.getElementById(`${p}2`).classList.contains('hidden') && v2 > 0) ? `${v1} X ${v2}` : `${v1}`;
-            };
-            const ent = await obtenerIdMedida(getDim('ent')), sal = await obtenerIdMedida(getDim('sal'));
-            let head = fam; if (fam !== "TU") head += conf; head += me; if (fam !== "FL") head += jun; if (fam === "CE" || fam === "CF") head += ang;
-            document.getElementById('final-code-display').innerText = fam === "CT" ? `${head}${ent}-${sal}` : `${head}${ent}`;
-        }
-
-        function formatDimensionInches(text) {
-            if (!text) return "";
-            return text.replace(/\s+/g, '').split('X').map(valStr => {
-                const num = parseFloat(valStr); if (isNaN(num)) return valStr; if (Math.abs(num - 197) <= 1) return `${num} mm (7-3/4 in)`;
-                const roundedInches = Math.round(num / 25.4); return (Math.abs(num - (roundedInches * 25.4)) <= 2.5 && roundedInches > 0) ? `${num} mm (${roundedInches} in)` : `${num} mm`;
-            }).join(' X ');
-        }
-
-        function handleKeyPress(e) { if (e.key === 'Enter') decodificar(); }
-
-        async function decodificar() {
-            const inputFull = document.getElementById('input-code').value.trim().toUpperCase(), errorMsg = document.getElementById('error-msg'), resBox = document.getElementById('result');
-            errorMsg.innerText = ""; resBox.style.display = "none"; if (inputFull.length < 3) { errorMsg.innerText = "Código inválido."; return; }
-            const fam = inputFull.substring(0, 2); if (!famMap[fam]) { errorMsg.innerText = "Familia no reconocida."; return; }
-            document.getElementById('res-fam').innerText = famMap[fam];
-            ['row-conf', 'row-sal', 'row-ang', 'row-jun'].forEach(id => document.getElementById(id).style.display = "none");
-            try {
-                let idx = 2, conf = "";
-                if (fam !== "TU") { conf = inputFull.charAt(idx++); document.getElementById('res-conf').innerText = (dataRef[fam] && dataRef[fam].conf && dataRef[fam].conf[conf]) ? dataRef[fam].conf[conf] : "Desconocido"; document.getElementById('row-conf').style.display = "flex"; }
-                const meVal = matEspRev[inputFull.charAt(idx++)] || "Desconocido";
-                document.getElementById('res-mat').innerText = meVal.split(' (')[0]; document.getElementById('res-esp').innerText = meVal.includes('(') ? meVal.split('(')[1].replace(')', '') : "Desconocido";
-                if (fam !== "FL") { document.getElementById('res-jun').innerText = junMapDec[inputFull.charAt(idx++)] || "Desconocido"; document.getElementById('row-jun').style.display = "flex"; }
-                if (fam === "CE" || fam === "CF") {
-                    let angStr = ""; while (idx < inputFull.length && !isNaN(inputFull.charAt(idx))) { angStr += inputFull.charAt(idx++); if (["15","30","45","60","90"].includes(angStr)) break; }
-                    document.getElementById('res-ang').innerText = angStr + "°"; document.getElementById('row-ang').style.display = "flex";
-                }
-                const numPart = inputFull.substring(idx); if (!numPart) { errorMsg.innerText = "Faltan las medidas numéricas."; return; }
-                if (fam === "CT") {
-                    const ctParts = numPart.split('-');
-                    let dbEnt = await obtenerMedidaPorId(ctParts[0]); document.getElementById('res-ent').innerText = formatDimensionInches(dbEnt);
-                    if (ctParts.length >= 2) { let dbSal = await obtenerMedidaPorId(ctParts[1]); document.getElementById('res-sal').innerText = formatDimensionInches(dbSal); document.getElementById('row-sal').style.display = "flex"; }
-                } else {
-                    let dbEnt = await obtenerMedidaPorId(numPart); document.getElementById('res-ent').innerText = formatDimensionInches(dbEnt);
-                }
-                resBox.style.display = "block";
-            } catch (e) { errorMsg.innerText = "Error al procesar el código."; }
-        }
-
-        window.onload = function() { actualizarInterfaz(); };
-    </script>
-</body>
-</html>
+            } catch (
