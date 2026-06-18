@@ -200,4 +200,107 @@
                 let response = await fetch(URL_GOOGLE_STORE, { method: "POST", mode: "cors", body: JSON.stringify({ id: idTexto.trim() }) });
                 let resultado = await response.json();
                 return resultado.status === "success" ? resultado.medida : idTexto;
-            } catch (
+            } catch (error) { console.error("Error BD consultando ID:", error); return idTexto; }
+        }
+
+        function showView(viewId) {
+            document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            const vista = document.getElementById(viewId);
+            if (vista) vista.classList.add('active');
+            if(viewId === 'home-view') document.getElementById('tab-home').classList.add('active');
+            if(viewId === 'est-view') document.getElementById('tab-est').classList.add('active');
+            if(viewId === 'dec-view') document.getElementById('tab-dec').classList.add('active');
+        }
+
+        function toggleUnit(field, unit) {
+            units[field] = unit;
+            document.getElementById(`${field}-mm`).classList.toggle('active', unit === 'mm');
+            document.getElementById(`${field}-in`).classList.toggle('active', unit === 'in');
+        }
+
+        function actualizarInterfaz() {
+            const fam = document.getElementById('familia').value, info = dataRef[fam];
+            document.getElementById('table-conf-box').classList.toggle('hidden', !info.conf);
+            document.getElementById('table-junta-box').classList.toggle('hidden', !info.jun);
+            const divConf = document.getElementById('div-conf');
+            if (info.conf) {
+                divConf.classList.remove('hidden'); const sel = document.getElementById('config');
+                if (sel.getAttribute('data-fam') !== fam) {
+                    sel.innerHTML = Object.entries(info.conf).map(([k,v]) => `<option value="${k}">${v}</option>`).join(""); sel.setAttribute('data-fam', fam);
+                    document.querySelector('#table-conf tbody').innerHTML = Object.entries(info.conf).map(([k,v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("");
+                }
+            } else { divConf.classList.add('hidden'); }
+            const conf = document.getElementById('config').value; let esRectEnt = (fam === 'CT' && (conf === 'B' || conf === 'D')) || (fam === 'FL' && conf === 'C');
+            toggleDim('ent', esRectEnt); toggleDim('sal', false && info.sal);
+            document.getElementById('div-salida').classList.toggle('hidden', !info.sal);
+            const selAng = document.getElementById('angulo');
+            if (info.ang) { document.getElementById('div-angulo').classList.remove('hidden'); selAng.innerHTML = info.ang.map(a => `<option value="${a}">${a}°</option>`).join(""); }
+            else { document.getElementById('div-angulo').classList.add('hidden'); }
+            document.getElementById('div-junta').classList.toggle('hidden', !info.jun); dibujarTablasMat();
+        }
+
+        function toggleDim(prefix, showSecond) { document.getElementById(`${prefix}2`).classList.toggle('hidden', !showSecond); document.querySelector(`#${prefix}-group .x-sep`).classList.toggle('hidden', !showSecond); }
+        function processVal(val, field) { let n = parseFloat(val) || 0; return units[field] === 'in' ? Math.round(n * 25.4) : n; }
+
+        function dibujarTablasMat() {
+            document.getElementById('table-mat').innerHTML = Object.entries(matEspMap).map(([k,v]) => `<tr><td>${v}</td><td>${k[0]=='G'?'GALVANIZADO':k[0]=='I'?'INOXIDABLE':'ACERO NEGRO'}</td><td>${k.slice(1)/10}</td></tr>`).join("");
+            const tJun = document.getElementById('table-junta'), selJun = document.getElementById('junta');
+            if (tJun.innerHTML === "") {
+                tJun.innerHTML = Object.entries(junMap).map(([k,v]) => `<tr><td>${k}</td><td>${v[0]}</td><td>${v[1]}</td></tr>`).join("");
+                selJun.innerHTML = Object.entries(junMap).map(([k,v]) => `<option value="${k}">${v[0]} - ${v[1]}</option>`).join("");
+            }
+        }
+
+        async function generarCodigo() {
+            document.getElementById('final-code-display').innerText = "PROCESANDO CON BASE DE DATOS...";
+            const fam = document.getElementById('familia').value, conf = document.getElementById('config').value;
+            const me = matEspMap[document.getElementById('material').value + document.getElementById('espesor').value], jun = document.getElementById('junta').value, ang = document.getElementById('angulo').value;
+            const getDim = (p) => {
+                const v1 = processVal(document.getElementById(`${p}1`).value, p), v2 = processVal(document.getElementById(`${p}2`).value, p);
+                return (!document.getElementById(`${p}2`).classList.contains('hidden') && v2 > 0) ? `${v1} X ${v2}` : `${v1}`;
+            };
+            const ent = await obtenerIdMedida(getDim('ent')), sal = await obtenerIdMedida(getDim('sal'));
+            let head = fam; if (fam !== "TU") head += conf; head += me; if (fam !== "FL") head += jun; if (fam === "CE" || fam === "CF") head += ang;
+            document.getElementById('final-code-display').innerText = fam === "CT" ? `${head}-${ent}-${sal}` : `${head}-${ent}`;
+        }
+
+        function formatDimensionInches(text) {
+            if (!text || text === "0") return "0 mm";
+            return text.split('X').map(valStr => {
+                const num = parseFloat(valStr.trim()); if (isNaN(num)) return valStr.trim(); if (Math.abs(num - 197) <= 1) return `${num} mm (7-3/4 in)`;
+                const roundedInches = Math.round(num / 25.4); return (Math.abs(num - (roundedInches * 25.4)) <= 2.5 && roundedInches > 0) ? `${num} mm (${roundedInches} in)` : `${num} mm`;
+            }).join(' X ');
+        }
+
+        function handleKeyPress(e) { if (e.key === 'Enter') decodificar(); }
+
+        async function decodificar() {
+            const inputFull = document.getElementById('input-code').value.trim().toUpperCase(), errorMsg = document.getElementById('error-msg'), resBox = document.getElementById('result');
+            errorMsg.innerText = ""; resBox.style.display = "none"; if (inputFull.length < 3) { errorMsg.innerText = "Código inválido."; return; }
+            const parts = inputFull.split('-'); const head = parts[0]; if (head.length < 3 && head.substring(0,2) !== "TU") { errorMsg.innerText = "Formato de código inválido."; return; }
+            const fam = head.substring(0, 2); if (!famMap[fam]) { errorMsg.innerText = "Familia no reconocida."; return; }
+            document.getElementById('res-fam').innerText = famMap[fam];
+            ['row-conf', 'row-sal', 'row-ang', 'row-jun'].forEach(id => document.getElementById(id).style.display = "none");
+            try {
+                let idx = 2, conf = "";
+                if (fam !== "TU") { conf = head.charAt(idx++); document.getElementById('res-conf').innerText = (dataRef[fam] && dataRef[fam].conf && dataRef[fam].conf[conf]) ? dataRef[fam].conf[conf] : "Desconocido"; document.getElementById('row-conf').style.display = "flex"; }
+                const meVal = matEspRev[head.charAt(idx++)] || "Desconocido";
+                document.getElementById('res-mat').innerText = meVal.split(' (')[0]; document.getElementById('res-esp').innerText = meVal.includes('(') ? meVal.split('(')[1].replace(')', '') : "Desconocido";
+                if (fam !== "FL") { document.getElementById('res-jun').innerText = junMapDec[head.charAt(idx++)] || "Desconocido"; document.getElementById('row-jun').style.display = "flex"; }
+                if (fam === "CE" || fam === "CF") { let angStr = head.substring(idx); document.getElementById('res-ang').innerText = angStr + "°"; document.getElementById('row-ang').style.display = "flex"; }
+                if (parts.length < 2) { errorMsg.innerText = "Faltan las medidas en el código."; return; }
+                if (fam === "CT") {
+                    let dbEnt = await obtenerMedidaPorId(parts[1]); document.getElementById('res-ent').innerText = formatDimensionInches(dbEnt);
+                    if (parts.length >= 3) { let dbSal = await obtenerMedidaPorId(parts[2]); document.getElementById('res-sal').innerText = formatDimensionInches(dbSal); document.getElementById('row-sal').style.display = "flex"; }
+                } else {
+                    let dbEnt = await obtenerMedidaPorId(parts[1]); document.getElementById('res-ent').innerText = formatDimensionInches(dbEnt);
+                }
+                resBox.style.display = "block";
+            } catch (e) { errorMsg.innerText = "Error al procesar el código."; }
+        }
+
+        window.onload = function() { actualizarInterfaz(); };
+    </script>
+</body>
+</html>
