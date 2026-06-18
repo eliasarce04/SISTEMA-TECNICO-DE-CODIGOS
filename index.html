@@ -153,7 +153,7 @@
     <div id="dec-view" class="view-container">
         <div class="container">
             <h2>MÓDULO DE DESGLOSE DE ACCESORIOS</h2>
-            <div class="input-group"><input type="text" id="input-code" placeholder="EJ: FLCA-1 o CTBA-1-2" onkeypress="handleKeyPress(event)"></div>
+            <div class="input-group"><input type="text" id="input-code" placeholder="EJ: FLAA-1 o CTBA-1-2" onkeypress="handleKeyPress(event)"></div>
             <button class="btn-dec" onclick="decodificar()">INTERPRETAR CÓDIGO</button>
             <div id="error-msg" class="error"></div>
             <div id="result" class="result-box">
@@ -304,19 +304,19 @@
                 if (fam !== "FL") { document.getElementById('res-jun').innerText = junMapDec[head.charAt(idx++)] || "Desconocido"; document.getElementById('row-jun').style.display = "flex"; }
                 if (fam === "CE" || fam === "CF") { let angStr = head.substring(idx); document.getElementById('res-ang').innerText = angStr + "°"; document.getElementById('row-ang').style.display = "flex"; }
                 
-                // VALIDACIÓN ESTRICTA DE MEDIDA DE ENTRADA
+                // VALIDACIÓN ESTRICTA: COMPARA LO QUE REGRESA LA BD CON EL ID ENVIADO
                 let dbEnt = await obtenerMedidaPorId(parts[1]); 
-                if (dbEnt.trim() === parts[1].trim() || dbEnt === "0") {
+                if (dbEnt.toString().trim() === parts[1].toString().trim() || dbEnt === "0") {
                     errorMsg.innerText = `Error: La medida con ID "${parts[1]}" no existe en la base de datos.`;
                     return;
                 }
                 document.getElementById('res-ent').innerText = formatDimensionInches(dbEnt);
                 
-                // VALIDACIÓN ESTRICTA DE MEDIDA DE SALIDA (SI ES TRANSICIÓN)
+                // MISMA VALIDACIÓN ESTRICTA PARA MEDIDA DE SALIDA EN TRANSICIONES
                 if (fam === "CT") {
                     if (parts.length >= 3) { 
                         let dbSal = await obtenerMedidaPorId(parts[2]); 
-                        if (dbSal.trim() === parts[2].trim() || dbSal === "0") {
+                        if (dbSal.toString().trim() === parts[2].toString().trim() || dbSal === "0") {
                             errorMsg.innerText = `Error: La medida de salida con ID "${parts[2]}" no existe en la base de datos.`;
                             return;
                         }
