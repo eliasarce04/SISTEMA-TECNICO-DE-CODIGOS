@@ -1,25 +1,286 @@
-async function decodificar() {
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA TÉCNICO DE CÓDIGOS</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7f9; }
+        header { background-color: #333; color: white; padding: 0 20px; display: flex; align-items: center; height: 50px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .nav-tabs { display: flex; height: 100%; }
+        .nav-tab { padding: 0 25px; display: flex; align-items: center; cursor: pointer; transition: 0.3s; font-size: 14px; font-weight: 600; color: #ccc; text-decoration: none; border-bottom: 3px solid transparent; }
+        .nav-tab:hover, .nav-tab.active { background-color: #444; color: white; }
+        .nav-tab.active { border-bottom: 3px solid #007bff; }
+        .view-container { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
+        .view-container.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .home-menu { text-align: center; max-width: 1100px; margin: 60px auto; }
+        .home-menu h1 { font-size: 32px; color: #111; margin-bottom: 10px; }
+        .home-menu p { color: #666; margin-bottom: 40px; }
+        .cards-flex { display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; }
+        .card { background: white; border-radius: 12px; padding: 30px 20px; width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); cursor: pointer; transition: 0.3s; border: 1px solid #e2e8f0; display: flex; flex-direction: column; align-items: center; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.12); border-color: #007bff; }
+        .card h3 { margin: 10px 0 5px 0; color: #1e293b; font-size: 18px; }
+        .card span { font-size: 13px; color: #64748b; }
+        .main-layout { display: flex; flex: 1; gap: 20px; }
+        .left-section { flex: 1; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-width: 420px; height: fit-content; }
+        .right-section { flex: 2; display: flex; flex-direction: column; gap: 20px; }
+        .tables-row { display: flex; gap: 15px; flex-wrap: wrap; }
+        .side-table { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); flex: 1; min-width: 250px; }
+        .side-table h3, .left-section h2 { color: #333; text-align: center; margin-top: 0; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .side-table table { border-collapse: collapse; width: 100%; font-size: 10px; }
+        .side-table th, .side-table td { border: 1px solid #ddd; padding: 5px; text-align: center; }
+        .side-table th { background-color: #f8f9fa; }
+        .field { margin-bottom: 15px; }
+        .field label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 13px; color: #555; }
+        .measure-container { display: flex; flex-direction: column; gap: 5px; border: 1px solid #eee; padding: 10px; border-radius: 8px; background: #fafafa; }
+        .unit-selector { display: flex; gap: 2px; margin-bottom: 5px; justify-content: flex-end; }
+        .unit-btn { padding: 4px 10px; font-size: 11px; border: 1px solid #ccc; background: #fff; cursor: pointer; border-radius: 4px; }
+        .unit-btn.active { background: #007bff; color: white; border-color: #0056b3; font-weight: bold; }
+        .dimension-group { display: flex; align-items: center; gap: 8px; }
+        .dimension-group input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 5px; width: 50px; }
+        #est-view select, #est-view input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .hidden { display: none !important; }
+        button#gen-btn { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; }
+        #final-code-display { margin-top: 15px; padding: 20px; background: #e7f3ff; border: 2px dashed #007bff; font-family: monospace; font-size: 24px; font-weight: bold; text-align: center; border-radius: 6px; color: #0056b3; }
+        #dec-view .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-width: 600px; margin: 0 auto; width: 100%; }
+        #dec-view h2 { color: #333; text-align: center; margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+        .input-group { margin: 20px 0; }
+        #dec-view input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-family: monospace; font-size: 18px; text-align: center; box-sizing: border-box; text-transform: uppercase; }
+        #dec-view input:focus { border-color: #007bff; outline: none; }
+        #dec-view .btn-dec { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; }
+        .result-box { margin-top: 25px; display: none; }
+        .result-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; align-items: center;}
+        .result-item .label { font-weight: bold; color: #555; }
+        .result-item .value { font-weight: 600; color: #111; }
+        .error { color: #dc3545; text-align: center; font-weight: bold; margin-top: 15px; font-size: 16px; }
+        .badge-machine { background-color: #e67e22; color: white; padding: 4px 10px; border-radius: 4px; font-size: 13px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="showView('home-view')" id="tab-home">Inicio</div>
+            <div class="nav-tab" onclick="showView('est-view')" id="tab-est">Módulo de Codificación</div>
+            <div class="nav-tab" onclick="showView('dec-view')" id="tab-dec">Módulo de Desglose</div>
+        </div>
+    </header>
+
+    <div id="home-view" class="view-container active">
+        <div class="home-menu">
+            <h1>SISTEMA TÉCNICO DE CÓDIGOS</h1>
+            <p>Seleccione el aplicativo que desea utilizar</p>
+            <div class="cards-flex">
+                <div class="card" onclick="showView('est-view')">
+                    <h3>Módulo de Codificación</h3><span>Generar códigos técnicos automáticos</span>
+                </div>
+                <div class="card" onclick="showView('dec-view')">
+                    <h3>Módulo de Desglose</h3><span>Interpretar códigos existentes (Medidas y Máquinas)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="est-view" class="view-container">
+        <div class="main-layout">
+            <div class="left-section">
+                <h2>CONFIGURACIÓN</h2>
+                <div class="field"><label>FAMILIA:</label>
+                    <select id="familia" onchange="actualizarInterfaz()">
+                        <option value="FL">FLANCHES (FL)</option><option value="TU">TUBOS (TU)</option><option value="CE">CODOS (CE)</option><option value="CF">FRENOS (CF)</option><option value="CT">TRANSICIONES (CT)</option>
+                    </select>
+                </div>
+                <div class="field" id="div-conf"><label>CONF:</label><select id="config" onchange="actualizarInterfaz()"></select></div>
+                <div class="field"><label id="lbl-ent">DIMENSIÓN DE ENTRADA:</label>
+                    <div class="measure-container">
+                        <div class="unit-selector"><button class="unit-btn active" id="ent-mm" onclick="toggleUnit('ent', 'mm')">mm</button><button class="unit-btn" id="ent-in" onclick="toggleUnit('ent', 'in')">in</button></div>
+                        <div id="ent-group" class="dimension-group"><input type="number" id="ent1" placeholder="Medida" step="any"><span class="x-sep hidden">X</span><input type="number" id="ent2" class="hidden" placeholder="Medida" step="any"></div>
+                    </div>
+                </div>
+                <div class="field" id="div-salida"><label id="lbl-sal">DIMENSIÓN DE SALIDA:</label>
+                    <div class="measure-container">
+                        <div class="unit-selector"><button class="unit-btn active" id="sal-mm" onclick="toggleUnit('sal', 'mm')">mm</button><button class="unit-btn" id="sal-in" onclick="toggleUnit('sal', 'in')">in</button></div>
+                        <div id="sal-group" class="dimension-group"><input type="number" id="sal1" placeholder="Medida" step="any"><span class="x-sep hidden">X</span><input type="number" id="sal2" class="hidden" placeholder="Medida" step="any"></div>
+                    </div>
+                </div>
+                <div class="field" id="div-angulo"><label>ÁNGULO:</label><select id="angulo"></select></div>
+                <div class="field"><label>MATERIAL:</label><select id="material"><option value="G">GALVANIZADO</option><option value="I">INOXIDABLE</option><option value="A">ACERO NEGRO</option></select></div>
+                <div class="field"><label>ESPESOR:</label><select id="espesor"><option value="15">1.5</option><option value="20">2.0</option><option value="27">2.7</option><option value="30">3.0</option><option value="46">4.6</option></select></div>
+                <div class="field" id="div-junta"><label>TIPO DE JUNTAS:</label><select id="junta"></select></div>
+                <button id="gen-btn" onclick="generarCodigo()">GENERAR CÓDIGO</button>
+            </div>
+            <div class="right-section">
+                <div class="tables-row">
+                    <div class="side-table" id="table-conf-box"><h3>REF. CONFIGURACIÓN</h3><table id="table-conf"><thead><tr><th>LETRA</th><th>REPRESENTA</th></tr></thead><tbody></tbody></table></div>
+                    <div class="side-table"><h3>MATERIAL + ESPESOR</h3><table><thead><tr><th>LETRA</th><th>MATERIAL</th><th>ESP</th></tr></thead><tbody id="table-mat"></tbody></table></div>
+                    <div class="side-table" id="table-junta-box"><h3>TIPO DE JUNTAS</h3><table><thead><tr><th>LETRA</th><th>JUNTA 1</th><th>JUNTA 2</th></tr></thead><tbody id="table-junta"></tbody></table></div>
+                </div>
+                <div class="breakdown-section" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);"><h3>CÓDIGO RESULTANTE</h3><div id="final-code-display">ESPERANDO DATOS</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dec-view" class="view-container">
+        <div class="container">
+            <h2>MÓDULO DE DESGLOSE DE ACCESORIOS</h2>
+            <div class="input-group"><input type="text" id="input-code" placeholder="EJ: FLAA-10 o I1-10032" onkeypress="handleKeyPress(event)"></div>
+            <button class="btn-dec" onclick="decodificar()">INTERPRETAR CÓDIGO</button>
+            <div id="error-msg" class="error"></div>
+            <div id="result" class="result-box">
+                <div class="result-item"><span class="label">TIPO / FAMILIA:</span><span id="res-fam" class="value"></span></div>
+                <div id="row-conf" class="result-item"><span class="label">CONFIGURACIÓN:</span><span id="res-conf" class="value"></span></div>
+                
+                <div id="row-ent" class="result-item"><span class="label">DIMENSIÓN ENTRADA:</span><span id="res-ent" class="value"></span></div>
+                <div id="row-sal" class="result-item"><span class="label">DIMENSIÓN SALIDA:</span><span id="res-sal" class="value"></span></div>
+                
+                <div id="row-maq" class="result-item" style="display:none;"><span class="label">MÁQUINA ASOCIADA:</span><span id="res-maq" class="value" style="color:#e67e22;"></span></div>
+                <div id="row-flu" class="result-item" style="display:none;"><span class="label">UBICACIÓN / VÍA:</span><span id="res-flu" class="badge-machine"></span></div>
+                
+                <div id="row-ang" class="result-item"><span class="label">ÁNGULO:</span><span id="res-ang" class="value"></span></div>
+                <div class="result-item"><span class="label">MATERIAL:</span><span id="res-mat" class="value"></span></div>
+                <div class="result-item"><span class="label">ESPESOR:</span><span id="res-esp" class="value"></span></div>
+                <div id="row-jun" class="result-item"><span class="label">TIPO JUNTAS:</span><span id="res-jun" class="value"></span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cambia esta URL por la dirección de ejecución de tu Google Apps Script actualizado
+        const URL_GOOGLE_STORE = "https://script.google.com/macros/s/AKfycbxIwl9OzqBML9pROQXjGqPZF1a562emYdDSx5p1wp9b2bZh3kqJJ42rWnXnL4Lw7v3o/exec";
+        
+        let units = { ent: 'mm', sal: 'mm' };
+        const famMap = { "FL": "FLANCHES", "TU": "TUBOS", "CE": "CODOS", "CF": "FRENOS", "CT": "TRANSICIONES" };
+        const dataRef = {
+            FL: { conf: { "A": "REDONDOS", "B": "CUADRADOS", "C": "RECTANGULAR" }, ang: false, sal: false, jun: false },
+            TU: { conf: null, ang: false, sal: false, jun: true },
+            CE: { conf: { "A": "REDONDOS", "B": "CUADRADOS CON LINNER", "C": "CUADRADOS RADIO LARGO" }, ang: ["15","30","45","60","90"], sal: false, jun: true },
+            CF: { conf: { "A": "FIJOS", "B": "AXIALES" }, ang: ["45","60"], sal: false, jun: true },
+            CT: { conf: { "A": "REDONDO A REDONDO", "B": "RECTANGULAR A CUADRADO", "C": "CUADRADO A REDONDO", "D": "RECTANGULAR A REDONDO" }, ang: false, sal: true, jun: true }
+        };
+        const matEspMap = { "G15":"A", "G20":"B", "G27":"C", "G30":"D", "G46":"E", "I15":"F", "I20":"G", "I27":"H", "I30":"I", "I46":"J", "A15":"K", "A20":"L", "A27":"M", "A30":"N", "A46":"O" };
+        const matEspRev = { "A":"GALVANIZADO (1.5mm)", "B":"GALVANIZADO (2.0mm)", "C":"GALVANIZADO (2.7mm)", "D":"GALVANIZADO (3.0mm)", "E":"GALVANIZADO (4.6mm)", "F":"INOXIDABLE (1.5mm)", "G":"INOXIDABLE (2.0mm)", "H":"INOXIDABLE (2.7mm)", "I":"INOXIDABLE (3.0mm)", "J":"INOXIDABLE (4.6mm)", "K":"ACERO NEGRO (1.5mm)", "L":"ACERO NEGRO (2.0mm)", "M":"ACERO NEGRO (2.7mm)", "N":"ACERO NEGRO (3.0mm)", "O":"ACERO NEGRO (4.6mm)" };
+        const junMap = { "A":["FLANCHE","FLANCHE"], "B":["FLANCHE","PESTAÑA"], "C":["FLANCHE","LISO"], "D":["PESTAÑA","FLANCHE"], "E":["PESTAÑA","PESTAÑA"], "F":["PESTAÑA","LISO"], "G":["LISO","FLANCHE"], "H":["LISO","PESTAÑA"], "I":["LISO","LISO"] };
+        const junMapDec = { "A":"FLANCHE / FLANCHE", "B":"FLANCHE / PESTAÑA", "C":"FLANCHE / LISO", "D":"PESTAÑA / FLANCHE", "E":"PESTAÑA / PESTAÑA", "F":"PESTAÑA / LISO", "G":"LISO / FLANCHE", "H":"LISO / PESTAÑA", "I":"LISO / LISO" };
+
+        async function obtenerIdMedida(medidaTexto) {
+            if (!medidaTexto || medidaTexto.trim() === "" || medidaTexto === "0") return "0";
+            try {
+                let response = await fetch(URL_GOOGLE_STORE, { 
+                    method: "POST", 
+                    redirect: "follow",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ medida: medidaTexto.trim() }) 
+                });
+                let resultado = await response.json();
+                return resultado.status === "success" ? resultado.id : "ERROR";
+            } catch (error) { console.error("Error BD:", error); return "ERROR"; }
+        }
+
+        async function consultarIdBD(idTexto) {
+            try {
+                let response = await fetch(URL_GOOGLE_STORE, { 
+                    method: "POST", 
+                    redirect: "follow",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ id: idTexto.trim() }) 
+                });
+                return await response.json();
+            } catch (error) { console.error("Error consultando ID:", error); return { status: "error", message: "Falla de red" }; }
+        }
+
+        function showView(viewId) {
+            document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            const vista = document.getElementById(viewId);
+            if (vista) vista.classList.add('active');
+            if(viewId === 'home-view') document.getElementById('tab-home').classList.add('active');
+            if(viewId === 'est-view') document.getElementById('tab-est').classList.add('active');
+            if(viewId === 'dec-view') document.getElementById('tab-dec').classList.add('active');
+        }
+
+        function toggleUnit(field, unit) {
+            units[field] = unit;
+            document.getElementById(`${field}-mm`).classList.toggle('active', unit === 'mm');
+            document.getElementById(`${field}-in`).classList.toggle('active', unit === 'in');
+        }
+
+        function actualizarInterfaz() {
+            const fam = document.getElementById('familia').value, info = dataRef[fam];
+            document.getElementById('table-conf-box').classList.toggle('hidden', !info.conf);
+            document.getElementById('table-junta-box').classList.toggle('hidden', !info.jun);
+            const divConf = document.getElementById('div-conf');
+            if (info.conf) {
+                divConf.classList.remove('hidden'); const sel = document.getElementById('config');
+                if (sel.getAttribute('data-fam') !== fam) {
+                    sel.innerHTML = Object.entries(info.conf).map(([k,v]) => `<option value="${k}">${v}</option>`).join(""); sel.setAttribute('data-fam', fam);
+                    document.querySelector('#table-conf tbody').innerHTML = Object.entries(info.conf).map(([k,v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("");
+                }
+            } else { divConf.classList.add('hidden'); }
+            const conf = document.getElementById('config').value; let esRectEnt = (fam === 'CT' && (conf === 'B' || conf === 'D')) || (fam === 'FL' && conf === 'C');
+            toggleDim('ent', esRectEnt); toggleDim('sal', false && info.sal);
+            document.getElementById('div-salida').classList.toggle('hidden', !info.sal);
+            const selAng = document.getElementById('angulo');
+            if (info.ang) { document.getElementById('div-angulo').classList.remove('hidden'); selAng.innerHTML = info.ang.map(a => `<option value="${a}">${a}°</option>`).join(""); }
+            else { document.getElementById('div-angulo').classList.add('hidden'); }
+            document.getElementById('div-junta').classList.toggle('hidden', !info.jun); dibujarTablasMat();
+        }
+
+        function toggleDim(prefix, showSecond) { document.getElementById(`${prefix}2`).classList.toggle('hidden', !showSecond); document.querySelector(`#${prefix}-group .x-sep`).classList.toggle('hidden', !showSecond); }
+        function processVal(val, field) { let n = parseFloat(val) || 0; return units[field] === 'in' ? Math.round(n * 25.4) : n; }
+
+        function dibujarTablasMat() {
+            document.getElementById('table-mat').innerHTML = Object.entries(matEspMap).map(([k,v]) => `<tr><td>${v}</td><td>${k[0]=='G'?'GALVANIZADO':k[0]=='I'?'INOXIDABLE':'ACERO NEGRO'}</td><td>${k.slice(1)/10}</td></tr>`).join("");
+            const tJun = document.getElementById('table-junta'), selJun = document.getElementById('junta');
+            if (tJun.innerHTML === "") {
+                tJun.innerHTML = Object.entries(junMap).map(([k,v]) => `<tr><td>${k}</td><td>${v[0]}</td><td>${v[1]}</td></tr>`).join("");
+                selJun.innerHTML = Object.entries(junMap).map(([k,v]) => `<option value="${k}">${v[0]} - ${v[1]}</option>`).join("");
+            }
+        }
+
+        async function generarCodigo() {
+            document.getElementById('final-code-display').innerText = "PROCESANDO CON BASE DE DATOS...";
+            const fam = document.getElementById('familia').value, conf = document.getElementById('config').value;
+            const me = matEspMap[document.getElementById('material').value + document.getElementById('espesor').value], jun = document.getElementById('junta').value, ang = document.getElementById('angulo').value;
+            const getDim = (p) => {
+                const v1 = processVal(document.getElementById(`${p}1`).value, p), v2 = processVal(document.getElementById(`${p}2`).value, p);
+                return (!document.getElementById(`${p}2`).classList.contains('hidden') && v2 > 0) ? `${v1} X ${v2}` : `${v1}`;
+            };
+            
+            const ent = await obtenerIdMedida(getDim('ent'));
+            const sal = await obtenerIdMedida(getDim('sal'));
+            
+            if (ent === "ERROR" || (dataRef[fam].sal && sal === "ERROR")) {
+                document.getElementById('final-code-display').innerHTML = "<span style='color:#dc3545;'>Error al procesar medida en Excel.</span>";
+                return;
+            }
+            
+            let head = fam; if (fam !== "TU") head += conf; head += me; if (fam !== "FL") head += jun; if (fam === "CE" || fam === "CF") head += ang;
+            document.getElementById('final-code-display').innerText = fam === "CT" ? `${head}-${ent}-${sal}` : `${head}-${ent}`;
+        }
+
+        function handleKeyPress(e) { if (e.key === 'Enter') decodificar(); }
+
+        async function decodificar() {
             const inputFull = document.getElementById('input-code').value.trim().toUpperCase(), errorMsg = document.getElementById('error-msg'), resBox = document.getElementById('result');
             errorMsg.innerText = ""; resBox.style.display = "none"; 
             if (inputFull.length < 2) { errorMsg.innerText = "Código inválido."; return; }
             
-            // Ocultar todas las filas dinámicas al iniciar la búsqueda
-            ['row-conf', 'row-sal', 'row-ang', 'row-jun', 'row-ent', 'row-maq', 'row-flu', 'res-fam'].forEach(id => {
-                let el = document.getElementById(id);
-                if(el) el.style.display = "none";
+            // Ocultar campos dinámicos alternantes por precaución
+            ['row-conf', 'row-sal', 'row-ang', 'row-jun', 'row-ent', 'row-maq', 'row-flu'].forEach(id => {
+                let el = document.getElementById(id); if(el) el.style.display = "none";
             });
-            document.getElementById('res-fam').parentElement.style.display = "flex"; // Mostrar fila contenedora de Familia
+            document.getElementById('res-fam').parentElement.style.display = "flex"; 
 
-            // --- ESCENARIO 1: ES UN CÓDIGO EXCLUSIVO DE MÁQUINA (Ej: I1-10032) ---
+            // =================================================================
+            // ESCENARIO 1: ACCESORIO DE MÁQUINA SIMPLIFICADO (Ej: I1-10032)
+            // =================================================================
             if (inputFull.startsWith("I") || inputFull.startsWith("O")) {
-                document.getElementById('res-fam').innerText = "CONEXIÓN DIRECTA DE MÁQUINA";
-                document.getElementById('res-fam').style.display = "block";
+                document.getElementById('res-fam').innerText = "ACCESORIO DE MÁQUINA";
+                document.getElementById('res-mat').innerText = "N/A";
+                document.getElementById('res-esp').innerText = "N/A";
                 
                 let resultadoBD = await consultarIdBD(inputFull);
-                if (resultadoBD.status === "error") {
-                    errorMsg.innerText = resultadoBD.message;
-                    return;
-                }
+                if (resultadoBD.status === "error") { errorMsg.innerText = resultadoBD.message; return; }
                 
                 if (resultadoBD.isMachine) {
                     document.getElementById('res-maq').innerText = resultadoBD.maquina;
@@ -28,10 +289,12 @@ async function decodificar() {
                     document.getElementById('row-flu').style.display = "flex";
                     resBox.style.display = "block";
                 }
-                return; // Finaliza el proceso para el caso de máquinas
+                return; 
             }
             
-            // --- ESCENARIO 2: CÓDIGO ESTÁNDAR (Ej: FLAA-10 o CTBA-1-2) ---
+            // =================================================================
+            // ESCENARIO 2: ACCESORIO INDUSTRIAL ESTÁNDAR (Ej: FLAA-10)
+            // =================================================================
             const parts = inputFull.split('-'); 
             const head = parts[0]; 
             if (head.length < 3 && head.substring(0,2) !== "TU") { errorMsg.innerText = "Formato de código estándar inválido."; return; }
@@ -41,7 +304,6 @@ async function decodificar() {
             if (parts.length < 2) { errorMsg.innerText = "Faltan las variables de dimensión en el código."; return; }
             
             document.getElementById('res-fam').innerText = famMap[fam];
-            document.getElementById('res-fam').style.display = "block";
             
             try {
                 let idx = 2, conf = "";
@@ -66,20 +328,14 @@ async function decodificar() {
                 }
                 
                 let resultadoBD = await consultarIdBD(parts[1]);
-                if (resultadoBD.status === "error") {
-                    errorMsg.innerText = "Dimensión Entrada: " + resultadoBD.message;
-                    return;
-                }
+                if (resultadoBD.status === "error") { errorMsg.innerText = "Dimensión Entrada: " + resultadoBD.message; return; }
                 
                 document.getElementById('res-ent').innerText = resultadoBD.medida + " mm";
                 document.getElementById('row-ent').style.display = "flex";
                 
                 if (fam === "CT" && parts.length >= 3) { 
                     let resultadoSalida = await consultarIdBD(parts[2]);
-                    if (resultadoSalida.status === "error") {
-                        errorMsg.innerText = "Dimensión Salida: " + resultadoSalida.message;
-                        return;
-                    }
+                    if (resultadoSalida.status === "error") { errorMsg.innerText = "Dimensión Salida: " + resultadoSalida.message; return; }
                     document.getElementById('res-sal').innerText = resultadoSalida.medida + " mm"; 
                     document.getElementById('row-sal').style.display = "flex"; 
                 }
@@ -87,3 +343,8 @@ async function decodificar() {
                 resBox.style.display = "block";
             } catch (e) { errorMsg.innerText = "Error crítico de procesamiento."; }
         }
+
+        window.onload = function() { actualizarInterfaz(); };
+    </script>
+</body>
+</html>
