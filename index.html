@@ -21,22 +21,6 @@
         .card { background: white; border-radius: 12px; padding: 30px 20px; width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); cursor: pointer; transition: 0.3s; border: 1px solid #e2e8f0; display: flex; flex-direction: column; align-items: center; }
         .card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.12); border-color: #007bff; }
         .tech-illustration { width: 100%; height: 160px; background-color: #f8fafc; background-image: linear-gradient(rgba(226, 232, 240, 0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(226, 232, 240, 0.6) 1px, transparent 1px); background-size: 10px 10px; border: 1px dashed #cbd5e1; border-radius: 8px; position: relative; margin-bottom: 25px; overflow: hidden; }
-        .tech-illustration::before { content: ''; position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px; border: 1px solid #94a3b8; pointer-events: none; }
-        .corner-dot { position: absolute; width: 6px; height: 6px; background: #e2e8f0; border: 1px solid #475569; border-radius: 50%; }
-        .cd-tl { top: 2px; left: 2px; } .cd-tr { top: 2px; right: 2px; } .cd-bl { bottom: 2px; left: 2px; } .cd-br { bottom: 2px; right: 2px; }
-        .sim-window { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70%; height: 70%; background: #ffffff; border: 1px solid #3b82f6; border-radius: 4px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15); display: flex; flex-direction: column; padding: 4px; }
-        .sim-header { height: 12px; background: #eff6ff; border-bottom: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: flex-end; gap: 2px; padding-right: 4px; }
-        .sim-dot { width: 4px; height: 4px; background: #94a3b8; border-radius: 50%; }
-        .sim-body { flex: 1; display: flex; flex-direction: column; gap: 5px; padding: 8px 6px; }
-        .sim-line { height: 6px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 2px; }
-        .sim-display { height: 14px; background: #f0fdf4; border: 1px dashed #22c55e; border-radius: 2px; font-size: 7px; color: #166534; font-family: monospace; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        .sim-btn { height: 14px; background: #3b82f6; border-radius: 2px; font-size: 7px; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        .scan-target { position: absolute; top: 25%; left: 15%; width: 32px; height: 32px; border: 2px solid #f97316; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
-        .scan-target::after { content: ''; position: absolute; width: 120%; height: 2px; background: #ef4444; box-shadow: 0 0 4px #ef4444; animation: scanLine 2s infinite ease-in-out; }
-        @keyframes scanLine { 0%, 100% { top: 0%; } 50% { top: 100%; } }
-        .scan-text { font-size: 6px; font-family: monospace; color: #ea580c; font-weight: bold; }
-        .sim-window.output { left: 60%; width: 55%; height: 75%; border-color: #64748b; }
-        .sim-window.output .sim-body { gap: 4px; font-family: monospace; font-size: 6px; color: #334155; text-align: left;}
         .card h3 { margin: 10px 0 5px 0; color: #1e293b; font-size: 18px; }
         .card span { font-size: 13px; color: #64748b; }
         .main-layout { display: flex; flex: 1; gap: 20px; }
@@ -67,9 +51,11 @@
         #dec-view input:focus { border-color: #007bff; outline: none; }
         #dec-view .btn-dec { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; }
         .result-box { margin-top: 25px; display: none; }
-        .result-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; }
+        .result-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; align-items: center;}
         .result-item .label { font-weight: bold; color: #555; }
+        .result-item .value { font-weight: 600; color: #111; }
         .error { color: #dc3545; text-align: center; font-weight: bold; margin-top: 15px; font-size: 16px; }
+        .badge-machine { background-color: #e67e22; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -87,25 +73,10 @@
             <p>Seleccione el aplicativo que desea utilizar</p>
             <div class="cards-flex">
                 <div class="card" onclick="showView('est-view')">
-                    <div class="tech-illustration">
-                        <div class="corner-dot cd-tl"></div><div class="corner-dot cd-tr"></div><div class="corner-dot cd-bl"></div><div class="corner-dot cd-br"></div>
-                        <div class="sim-window">
-                            <div class="sim-header"><div class="sim-dot"></div><div class="sim-dot"></div></div>
-                            <div class="sim-body"><div class="sim-line"></div><div class="sim-line"></div><div class="sim-display">FLCA-1</div><div class="sim-btn">GENERATE</div></div>
-                        </div>
-                    </div>
                     <h3>Módulo de Codificación</h3><span>Generar códigos técnicos automáticos</span>
                 </div>
                 <div class="card" onclick="showView('dec-view')">
-                    <div class="tech-illustration">
-                        <div class="corner-dot cd-tl"></div><div class="corner-dot cd-tr"></div><div class="corner-dot cd-bl"></div><div class="corner-dot cd-br"></div>
-                        <div class="scan-target"><span class="scan-text">FLCA-1</span></div>
-                        <div class="sim-window output">
-                            <div class="sim-header"><div class="sim-dot"></div><div class="sim-dot"></div></div>
-                            <div class="sim-body"><div style="color:#e67e22; font-weight:bold;">&gt; SCANNING...</div><div>&gt; FAM: FLANCHES</div><div>&gt; CONF: RECTANGULAR</div><div>&gt; ENT: 250 mm X 150 mm</div></div>
-                        </div>
-                    </div>
-                    <h3>Módulo de Desglose</h3><span>Interpretar códigos existentes</span>
+                    <h3>Módulo de Desglose</h3><span>Interpretar códigos existentes (Medidas y Máquinas)</span>
                 </div>
             </div>
         </div>
@@ -153,14 +124,19 @@
     <div id="dec-view" class="view-container">
         <div class="container">
             <h2>MÓDULO DE DESGLOSE DE ACCESORIOS</h2>
-            <div class="input-group"><input type="text" id="input-code" placeholder="EJ: FLCA-1 o CTBA-1-2" onkeypress="handleKeyPress(event)"></div>
+            <div class="input-group"><input type="text" id="input-code" placeholder="EJ: FLAA-10 o PCC-70K con FLAA-10032-I1" onkeypress="handleKeyPress(event)"></div>
             <button class="btn-dec" onclick="decodificar()">INTERPRETAR CÓDIGO</button>
             <div id="error-msg" class="error"></div>
             <div id="result" class="result-box">
                 <div class="result-item"><span class="label">FAMILIA:</span><span id="res-fam" class="value"></span></div>
                 <div id="row-conf" class="result-item"><span class="label">CONFIGURACIÓN:</span><span id="res-conf" class="value"></span></div>
-                <div class="result-item"><span class="label">DIMENSIÓN ENTRADA:</span><span id="res-ent" class="value"></span></div>
+                
+                <div id="row-ent" class="result-item"><span class="label">DIMENSIÓN ENTRADA:</span><span id="res-ent" class="value"></span></div>
                 <div id="row-sal" class="result-item"><span class="label">DIMENSIÓN SALIDA:</span><span id="res-sal" class="value"></span></div>
+                
+                <div id="row-maq" class="result-item" style="display:none;"><span class="label">MÁQUINA ASOCIADA:</span><span id="res-maq" class="value" style="color:#e67e22;"></span></div>
+                <div id="row-flu" class="result-item" style="display:none;"><span class="label">UBICACIÓN / VÍA:</span><span id="res-flu" class="badge-machine"></span></div>
+                
                 <div id="row-ang" class="result-item"><span class="label">ÁNGULO:</span><span id="res-ang" class="value"></span></div>
                 <div class="result-item"><span class="label">MATERIAL:</span><span id="res-mat" class="value"></span></div>
                 <div class="result-item"><span class="label">ESPESOR:</span><span id="res-esp" class="value"></span></div>
@@ -170,7 +146,7 @@
     </div>
 
     <script>
-        // URL DE TU GOOGLE APPS SCRIPT ASIGNADA CORRECTAMENTE
+        // PEGA AQUÍ TU URL ACTIVA DE GOOGLE APPS SCRIPT
         const URL_GOOGLE_STORE = "https://script.google.com/macros/s/AKfycbxIwl9OzqBML9pROQXjGqPZF1a562emYdDSx5p1wp9b2bZh3kqJJ42rWnXnL4Lw7v3o/exec";
         
         let units = { ent: 'mm', sal: 'mm' };
@@ -201,8 +177,7 @@
             } catch (error) { console.error("Error BD:", error); return "ERROR"; }
         }
 
-        async function obtenerMedidaPorId(idTexto) {
-            if (!idTexto || idTexto.trim() === "" || idTexto === "0") return "ERROR";
+        async function consultarIdBD(idTexto) {
             try {
                 let response = await fetch(URL_GOOGLE_STORE, { 
                     method: "POST", 
@@ -210,9 +185,8 @@
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify({ id: idTexto.trim() }) 
                 });
-                let resultado = await response.json();
-                return resultado.status === "success" ? resultado.medida : "ERROR";
-            } catch (error) { console.error("Error BD consultando ID:", error); return "ERROR"; }
+                return await response.json();
+            } catch (error) { console.error("Error consultando ID:", error); return { status: "error", message: "Falla de red" }; }
         }
 
         function showView(viewId) {
@@ -277,7 +251,7 @@
             const sal = await obtenerIdMedida(getDim('sal'));
             
             if (ent === "ERROR" || (dataRef[fam].sal && sal === "ERROR")) {
-                document.getElementById('final-code-display').innerHTML = "<span style='color:#dc3545;'>Error: Medida no registrada en Excel.</span>";
+                document.getElementById('final-code-display').innerHTML = "<span style='color:#dc3545;'>Error al procesar medida en Excel.</span>";
                 return;
             }
             
@@ -285,61 +259,81 @@
             document.getElementById('final-code-display').innerText = fam === "CT" ? `${head}-${ent}-${sal}` : `${head}-${ent}`;
         }
 
-        function formatDimensionInches(text) {
-            if (!text || text === "0" || text === "ERROR") return "";
-            return text.split('X').map(valStr => {
-                const num = parseFloat(valStr.trim()); if (isNaN(num)) return valStr.trim(); if (Math.abs(num - 197) <= 1) return `${num} mm (7-3/4 in)`;
-                const roundedInches = Math.round(num / 25.4); return (Math.abs(num - (roundedInches * 25.4)) <= 2.5 && roundedInches > 0) ? `${num} mm (${roundedInches} in)` : `${num} mm`;
-            }).join(' X ');
-        }
-
         function handleKeyPress(e) { if (e.key === 'Enter') decodificar(); }
 
         async function decodificar() {
             const inputFull = document.getElementById('input-code').value.trim().toUpperCase(), errorMsg = document.getElementById('error-msg'), resBox = document.getElementById('result');
             errorMsg.innerText = ""; resBox.style.display = "none"; if (inputFull.length < 3) { errorMsg.innerText = "Código inválido."; return; }
-            const parts = inputFull.split('-'); const head = parts[0]; if (head.length < 3 && head.substring(0,2) !== "TU") { errorMsg.innerText = "Formato de código inválido."; return; }
-            const fam = head.substring(0, 2); if (!famMap[fam]) { errorMsg.innerText = "Familia no reconocida."; return; }
             
-            if (parts.length < 2) { errorMsg.innerText = "Faltan las medidas en el código."; return; }
+            const parts = inputFull.split('-'); 
+            const head = parts[0]; 
+            if (head.length < 3 && head.substring(0,2) !== "TU") { errorMsg.innerText = "Formato de código inválido."; return; }
+            
+            const fam = head.substring(0, 2); 
+            if (!famMap[fam]) { errorMsg.innerText = "Familia no reconocida."; return; }
+            if (parts.length < 2) { errorMsg.innerText = "Faltan las variables de dimensión o máquina en el código."; return; }
             
             document.getElementById('res-fam').innerText = famMap[fam];
-            ['row-conf', 'row-sal', 'row-ang', 'row-jun'].forEach(id => document.getElementById(id).style.display = "none");
+            
+            // Ocultar filas dinámicas inicialmente
+            ['row-conf', 'row-sal', 'row-ang', 'row-jun', 'row-ent', 'row-maq', 'row-flu'].forEach(id => document.getElementById(id).style.display = "none");
             
             try {
                 let idx = 2, conf = "";
-                if (fam !== "TU") { conf = head.charAt(idx++); document.getElementById('res-conf').innerText = (dataRef[fam] && dataRef[fam].conf && dataRef[fam].conf[conf]) ? dataRef[fam].conf[conf] : "Desconocido"; document.getElementById('row-conf').style.display = "flex"; }
-                const meVal = matEspRev[head.charAt(idx++)] || "Desconocido";
-                document.getElementById('res-mat').innerText = meVal.split(' (')[0]; document.getElementById('res-esp').innerText = meVal.includes('(') ? meVal.split('(')[1].replace(')', '') : "Desconocido";
-                if (fam !== "FL") { document.getElementById('res-jun').innerText = junMapDec[head.charAt(idx++)] || "Desconocido"; document.getElementById('row-jun').style.display = "flex"; }
-                if (fam === "CE" || fam === "CF") { let angStr = head.substring(idx); document.getElementById('res-ang').innerText = angStr + "°"; document.getElementById('row-ang').style.display = "flex"; }
+                if (fam !== "TU") { 
+                    conf = head.charAt(idx++); 
+                    document.getElementById('res-conf').innerText = (dataRef[fam] && dataRef[fam].conf && dataRef[fam].conf[conf]) ? dataRef[fam].conf[conf] : "Desconocido"; 
+                    document.getElementById('row-conf').style.display = "flex"; 
+                }
                 
-                // VALIDACIÓN DE ENTRADA DESDE LA BD NUEVA
-                let dbEnt = await obtenerMedidaPorId(parts[1]); 
-                if (dbEnt === "ERROR") {
-                    errorMsg.innerText = `Error: La medida con ID "${parts[1]}" no existe en la base de datos.`;
+                const meVal = matEspRev[head.charAt(idx++)] || "Desconocido";
+                document.getElementById('res-mat').innerText = meVal.split(' (')[0]; 
+                document.getElementById('res-esp').innerText = meVal.includes('(') ? meVal.split('(')[1].replace(')', '') : "Desconocido";
+                
+                if (fam !== "FL") { 
+                    document.getElementById('res-jun').innerText = junMapDec[head.charAt(idx++)] || "Desconocido"; 
+                    document.getElementById('row-jun').style.display = "flex"; 
+                }
+                if (fam === "CE" || fam === "CF") { 
+                    let angStr = head.substring(idx); 
+                    document.getElementById('res-ang').innerText = angStr + "°"; 
+                    document.getElementById('row-ang').style.display = "flex"; 
+                }
+                
+                // CONSULTAR LA EXTENSIÓN AL APPS SCRIPT (Soporta Medidas e IDs de Máquinas)
+                let resultadoBD = await consultarIdBD(parts[1]);
+                if (resultadoBD.status === "error") {
+                    errorMsg.innerText = resultadoBD.message;
                     return;
                 }
-                document.getElementById('res-ent').innerText = formatDimensionInches(dbEnt);
                 
-                // VALIDACIÓN DE SALIDA DESDE LA BD NUEVA
+                // Si la respuesta indica que es una Máquina
+                if (resultadoBD.isMachine) {
+                    document.getElementById('res-maq').innerText = resultadoBD.maquina;
+                    document.getElementById('res-flu').innerText = resultadoBD.flujo.toUpperCase();
+                    document.getElementById('row-maq').style.display = "flex";
+                    document.getElementById('row-flu').style.display = "flex";
+                } else {
+                    // Si es una medida común
+                    document.getElementById('res-ent').innerText = resultadoBD.medida + " mm";
+                    document.getElementById('row-ent').style.display = "flex";
+                }
+                
+                // Validación para transiciones convencionales
                 if (fam === "CT") {
                     if (parts.length >= 3) { 
-                        let dbSal = await obtenerMedidaPorId(parts[2]); 
-                        if (dbSal === "ERROR") {
-                            errorMsg.innerText = `Error: La medida de salida con ID "${parts[2]}" no existe en la base de datos.`;
+                        let resultadoSalida = await consultarIdBD(parts[2]);
+                        if (resultadoSalida.status === "error") {
+                            errorMsg.innerText = "Salida: " + resultadoSalida.message;
                             return;
                         }
-                        document.getElementById('res-sal').innerText = formatDimensionInches(dbSal); 
+                        document.getElementById('res-sal').innerText = resultadoSalida.medida + " mm"; 
                         document.getElementById('row-sal').style.display = "flex"; 
-                    } else {
-                        errorMsg.innerText = "Falta la medida de salida en el código de transición.";
-                        return;
                     }
                 }
                 
                 resBox.style.display = "block";
-            } catch (e) { errorMsg.innerText = "Error al procesar el código."; }
+            } catch (e) { errorMsg.innerText = "Error crítico de procesamiento."; }
         }
 
         window.onload = function() { actualizarInterfaz(); };
